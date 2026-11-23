@@ -20,6 +20,7 @@ import CasesPage from './pages/CasesPage'
 import DocumentsPage from './pages/DocumentsPage'
 import FinancePage from './pages/FinancePage'
 import GradingPage from './pages/GradingPage'
+import GradebookPage from './pages/GradebookPage'
 import GradeGovernancePage from './pages/GradeGovernancePage'
 import './index.css'
 
@@ -32,6 +33,7 @@ function Shell() {
           <NavLink to="/" end>Dashboard</NavLink>
           <NavLink to="/admissions">Admissions &amp; CRM</NavLink>
           <NavLink to="/students">Students</NavLink>
+          <NavLink to="/gradebook">Gradebook</NavLink>
           <NavLink to="/grade-import">Grade Import</NavLink>
           <a className="muted" title="Coming soon">Registration</a>
           <NavLink to="/exams">Examinations</NavLink>
@@ -58,6 +60,7 @@ function Shell() {
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/students/new" element={<StudentForm />} />
           <Route path="/students/:id/edit" element={<StudentForm />} />
+          <Route path="/gradebook" element={<GradebookPage />} />
           <Route path="/grade-import" element={<GradeImportPage />} />
           <Route path="/moodle" element={<MoodlePage />} />
           <Route path="/exams" element={<ExamsPage />} />

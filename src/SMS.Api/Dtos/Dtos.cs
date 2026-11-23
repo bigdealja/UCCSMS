@@ -75,3 +75,5 @@ public record AssignmentDto(int Id, int ExaminerId, int? ProgrammeId, int? TermI
 public record PaperDto(int Id, string Title, int CourseId, int TermId, string Status, string SubmissionDeadline, string? AuthorLecturer, bool ExternalReviewRequired, int CurrentVersion, bool Overdue, bool AtRisk);
 
 public record ScriptBundleDto(int Id, string Code, int ExamId, int ScriptCount, string Status, string? Custodian, string? RetentionUntil, string? DisposalWitness);
+
+public record ComponentDto(int Id, string Name, string Category, double Weight, double MaxMark);

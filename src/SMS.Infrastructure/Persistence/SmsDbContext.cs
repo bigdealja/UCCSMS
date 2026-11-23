@@ -31,6 +31,8 @@ public class SmsDbContext : DbContext
     public DbSet<GradeScheme> GradeSchemes => Set<GradeScheme>();
     public DbSet<GradeBand> GradeBands => Set<GradeBand>();
     public DbSet<GradeChangeRequest> GradeChangeRequests => Set<GradeChangeRequest>();
+    public DbSet<AssessmentComponent> AssessmentComponents => Set<AssessmentComponent>();
+    public DbSet<ComponentMark> ComponentMarks => Set<ComponentMark>();
     public DbSet<Lead> Leads => Set<Lead>();
     public DbSet<AdmissionApplication> Applications => Set<AdmissionApplication>();
     public DbSet<ApplicationDocument> ApplicationDocuments => Set<ApplicationDocument>();
@@ -87,6 +89,8 @@ public class SmsDbContext : DbContext
         b.Entity<FeeType>().Property(x => x.DefaultAmount).HasPrecision(18, 2);
         b.Entity<GradeScheme>().HasIndex(x => new { x.Level, x.EffectiveFrom });
         b.Entity<GradeChangeRequest>().HasIndex(x => new { x.EnrollmentId, x.Status });
+        b.Entity<AssessmentComponent>().HasIndex(x => new { x.CourseId, x.TermId });
+        b.Entity<ComponentMark>().HasIndex(x => new { x.AssessmentComponentId, x.StudentId }).IsUnique();
         b.Entity<AdmissionApplication>().HasIndex(x => x.ApplicationNumber).IsUnique();
         b.Entity<AdmissionApplication>().HasIndex(x => x.Status);
         b.Entity<Lead>().HasIndex(x => x.Status);
@@ -118,6 +122,8 @@ public class SmsDbContext : DbContext
         b.Entity<GradeScheme>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<GradeBand>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<GradeChangeRequest>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<AssessmentComponent>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<ComponentMark>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<Lead>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<AdmissionApplication>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<ApplicationDocument>().HasQueryFilter(x => !x.IsDeleted);

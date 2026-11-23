@@ -218,6 +218,30 @@ API: `GET /api/finance/accounting/health`, `GET/POST /api/finance/fee-types`,
 `GET /api/finance/students/{id}/statement`, `POST .../charges`, `POST .../payments`.
 Config (secrets via env): `Accounting:Provider`, `Accounting:Sage300:{BaseUrl,Company,Username,Password}`.
 
+## Gradebook (in-system, no external grade sheet)
+
+Grades are entered and calculated **inside the system** — the external grade sheet is no longer
+needed.
+
+- **Assessment components** per course sitting (coursework items, mid-semester, end-of-semester),
+  each with a weight toward the final 100% and a max mark.
+- **Direct mark entry** against each component, per student, in an in-system grade sheet (students ×
+  components). The system computes **coursework%**, **end-of-semester%** and **final%**, applies the
+  policy **pass gate** (coursework ≥ 50% AND EOSA ≥ 50% AND overall pass mark) and derives the
+  **letter grade** via the grade scheme.
+- **Post to record** writes the computed coursework/final/letter onto each enrolment as one
+  **undoable batch** (`GradeSource = "Gradebook"`), feeding transcripts, GPA, grade governance and
+  Moodle — the same pipeline as every other grade source.
+- **Import retained as a fallback** — the Grade Import (Excel/CSV with column mapping) remains for
+  bulk or exceptional cases; direct entry is the primary path.
+- **Moodle** — components can carry a Moodle grade-item mapping (`MoodleItemId`) so activity marks
+  can be synced in; final grades already sync out via the Moodle module.
+
+API under `/api/gradebook/*` (`components`, `marks`, `sheet`, `compute`, `post`). Entry needs
+`grades.import`; reading needs `grades.read`. A React **Gradebook** page provides the grade sheet.
+
+## Grading (UCC Examination Policy)
+
 ## Grading (UCC Examination Policy)
 
 Grades follow the Examination Policy, as **configurable, versioned grade schemes** — not hard-coded.

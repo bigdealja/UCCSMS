@@ -230,6 +230,60 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.ToTable("ApplicationDocuments");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.AssessmentComponent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("MaxMark")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("MoodleItemId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TermId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Weight")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TermId");
+
+                    b.HasIndex("CourseId", "TermId");
+
+                    b.ToTable("AssessmentComponents");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.AssistantQueryLog", b =>
                 {
                     b.Property<int>("Id")
@@ -535,6 +589,54 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("CaseTypes");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ComponentMark", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AssessmentComponentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("EnteredBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<double>("Mark")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Source")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("AssessmentComponentId", "StudentId")
+                        .IsUnique();
+
+                    b.ToTable("ComponentMarks");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.Course", b =>
@@ -2698,6 +2800,25 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Navigation("AdmissionApplication");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.AssessmentComponent", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMS.Domain.Entities.Term", "Term")
+                        .WithMany()
+                        .HasForeignKey("TermId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Term");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.Case", b =>
                 {
                     b.HasOne("SMS.Domain.Entities.CaseType", "CaseType")
@@ -2725,6 +2846,25 @@ namespace SMS.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Case");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ComponentMark", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.AssessmentComponent", "AssessmentComponent")
+                        .WithMany()
+                        .HasForeignKey("AssessmentComponentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMS.Domain.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("AssessmentComponent");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.Course", b =>
