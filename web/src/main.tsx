@@ -8,6 +8,7 @@ import MoodlePage from './pages/MoodlePage'
 import ExamsPage from './pages/ExamsPage'
 import DocumentsPage from './pages/DocumentsPage'
 import FinancePage from './pages/FinancePage'
+import GradingPage from './pages/GradingPage'
 import './index.css'
 
 function Shell() {
@@ -21,6 +22,7 @@ function Shell() {
           <NavLink to="/grade-import">Grade Import</NavLink>
           <a className="muted" title="Coming soon">Registration</a>
           <NavLink to="/exams">Examinations</NavLink>
+          <NavLink to="/grading">Grade Schemes</NavLink>
           <NavLink to="/documents">Documents</NavLink>
           <NavLink to="/finance">Finance</NavLink>
           <NavLink to="/moodle">Moodle Sync</NavLink>
@@ -35,6 +37,7 @@ function Shell() {
           <Route path="/grade-import" element={<GradeImportPage />} />
           <Route path="/moodle" element={<MoodlePage />} />
           <Route path="/exams" element={<ExamsPage />} />
+          <Route path="/grading" element={<GradingPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/finance" element={<FinancePage />} />
         </Routes>

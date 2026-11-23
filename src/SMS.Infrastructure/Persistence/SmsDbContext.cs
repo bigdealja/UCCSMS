@@ -24,6 +24,8 @@ public class SmsDbContext : DbContext
     public DbSet<DocumentVersion> DocumentVersions => Set<DocumentVersion>();
     public DbSet<FeeType> FeeTypes => Set<FeeType>();
     public DbSet<FinancialTransaction> FinancialTransactions => Set<FinancialTransaction>();
+    public DbSet<GradeScheme> GradeSchemes => Set<GradeScheme>();
+    public DbSet<GradeBand> GradeBands => Set<GradeBand>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -48,6 +50,7 @@ public class SmsDbContext : DbContext
         b.Entity<FinancialTransaction>().HasIndex(x => x.StudentId);
         b.Entity<FinancialTransaction>().Property(x => x.Amount).HasPrecision(18, 2);
         b.Entity<FeeType>().Property(x => x.DefaultAmount).HasPrecision(18, 2);
+        b.Entity<GradeScheme>().HasIndex(x => new { x.Level, x.EffectiveFrom });
 
         // Don't cascade-delete across the academic graph
         foreach (var fk in b.Model.GetEntityTypes().SelectMany(t => t.GetForeignKeys()))
@@ -69,6 +72,8 @@ public class SmsDbContext : DbContext
         b.Entity<DocumentVersion>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<FeeType>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<FinancialTransaction>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<GradeScheme>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<GradeBand>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken ct = default)

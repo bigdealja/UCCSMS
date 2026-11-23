@@ -97,7 +97,13 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **3 — Examinations** ✅ | Exam scheduling, question banks, exam assembly, result capture, post-to-gradebook (undoable). On-screen exam delivery is a later sub-phase. |
 | **4 — Documents** ✅ | Versioned document store on MinIO/S3 (filesystem in dev), upload/version/download, per-student + categories. Automated PDF/Word *generation* is a later sub-phase. |
 | **5 — Finance + Sage 300** | Charges, fees, payments, refunds, ACH; Sage AR sync over HTTPS |
-| **6 — Remaining modules + migration** | Timetable, Housing, Health, Sports, Chapel; data migration cutover |
+| **6a — Grade-scheme engine** ✅ | UCC Examination Policy scales (Bachelors/Masters/Occupational), special grades, pass rules, credit-weighted GPA — configurable & versioned |
+| **6b — Admissions / CRM lifecycle** | Leads → application → document processing → admission; built-in + pluggable `ICrmProvider` |
+| **7 — Exam expansion** | Rooms/venues, room allocation, clash detection, special arrangements, invigilation |
+| **8 — Case management** | 14 case types (queries, appeals, irregularities, remarks …) |
+| **9 — AI assistant layer** | `IAiAssistant`: lead/application processing + staff/student help (human-in-the-loop) |
+| **10 — Governance & integrations** | Grade governance, external examiners, scripts/custody, HR provider, notifications/KPIs |
+| **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
 
@@ -160,6 +166,19 @@ running per-student balance) and, optionally, mirrors each entry to an external 
 API: `GET /api/finance/accounting/health`, `GET/POST /api/finance/fee-types`,
 `GET /api/finance/students/{id}/statement`, `POST .../charges`, `POST .../payments`.
 Config (secrets via env): `Accounting:Provider`, `Accounting:Sage300:{BaseUrl,Company,Username,Password}`.
+
+## Grading (UCC Examination Policy)
+
+Grades follow the Examination Policy, as **configurable, versioned grade schemes** — not hard-coded.
+Four scales are seeded (Bachelors, Masters, Occupational Associate, Occupational Diploma/Certificate),
+each with percentage→letter bands, GPA quality points, and special grades (I, RE, DNS, W, WF, DEF, MED,
+AM, EC). A programme's **level** selects its scheme by effective date.
+
+- Pass rule (policy): coursework ≥ 50% AND end-of-semester ≥ 50% AND combined ≥ overall pass mark
+  (50% undergraduate / Occupational, 60% Masters).
+- GPA = Σ(quality points × credits) ÷ Σ(credits), excluding grades that don't count (e.g. `I`).
+- `GET /api/grading/schemes`, `GET /api/grading/evaluate?programmeId=&coursework=&eosa=&final=`,
+  `GET /api/grading/students/{id}/gpa`.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

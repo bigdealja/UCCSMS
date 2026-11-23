@@ -558,6 +558,116 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.ToTable("FinancialTransactions");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.GradeBand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("CountsInGpa")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("GradeSchemeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPass")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSpecial")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Letter")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("MaxPercent")
+                        .HasColumnType("float");
+
+                    b.Property<double?>("MinPercent")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<double>("QualityPoints")
+                        .HasColumnType("float");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GradeSchemeId");
+
+                    b.ToTable("GradeBands");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.GradeScheme", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<double>("CourseworkPassMark")
+                        .HasColumnType("float");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date");
+
+                    b.Property<double>("EosaPassMark")
+                        .HasColumnType("float");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("OverallPassMark")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Level", "EffectiveFrom");
+
+                    b.ToTable("GradeSchemes");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.Programme", b =>
                 {
                     b.Property<int>("Id")
@@ -581,6 +691,9 @@ namespace SMS.Infrastructure.Persistence.Migrations
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -995,6 +1108,17 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Navigation("Term");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.GradeBand", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.GradeScheme", "GradeScheme")
+                        .WithMany("Bands")
+                        .HasForeignKey("GradeSchemeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("GradeScheme");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.Programme", b =>
                 {
                     b.HasOne("SMS.Domain.Entities.School", "School")
@@ -1054,6 +1178,11 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("Results");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.GradeScheme", b =>
+                {
+                    b.Navigation("Bands");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.Programme", b =>

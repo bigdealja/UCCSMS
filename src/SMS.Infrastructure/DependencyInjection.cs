@@ -11,6 +11,7 @@ using SMS.Infrastructure.Documents;
 using SMS.Application.Accounting;
 using SMS.Infrastructure.Accounting;
 using SMS.Infrastructure.Finance;
+using SMS.Infrastructure.Grading;
 using SMS.Infrastructure.Persistence;
 
 namespace SMS.Infrastructure;
@@ -52,6 +53,7 @@ public static class DependencyInjection
         else
             services.AddScoped<IAccountingProvider, NullAccountingProvider>();
         services.AddScoped<FinanceService>();
+        services.AddScoped<GradingService>();
         return services;
     }
 }

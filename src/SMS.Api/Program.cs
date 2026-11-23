@@ -60,6 +60,7 @@ if (app.Environment.IsDevelopment())
     {
         var db = scope.ServiceProvider.GetRequiredService<SMS.Infrastructure.Persistence.SmsDbContext>();
         await SMS.Infrastructure.Persistence.SeedData.EnsureSeededAsync(db);
+        await SMS.Infrastructure.Grading.GradeSchemeSeeder.EnsureSeededAsync(db);
     }
     catch (Exception ex)
     {

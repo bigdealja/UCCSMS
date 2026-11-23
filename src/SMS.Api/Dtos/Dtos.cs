@@ -31,3 +31,6 @@ public record FeeTypeDto(int Id, string Code, string Name, decimal DefaultAmount
 public record UpsertFeeTypeDto(string Code, string Name, decimal DefaultAmount, string? DistributionCode);
 public record ChargeDto(int? TermId, int? FeeTypeId, decimal Amount, string? Description);
 public record PaymentDto(decimal Amount, string Method, string? Reference, string? Description, bool IsRefund = false);
+
+public record GradeBandDto(string Letter, double? MinPercent, double? MaxPercent, double QualityPoints, bool IsPass, bool CountsInGpa, bool IsSpecial);
+public record GradeSchemeDto(int Id, string Name, string Level, string EffectiveFrom, double OverallPassMark, double CourseworkPassMark, double EosaPassMark, IReadOnlyList<GradeBandDto> Bands);
