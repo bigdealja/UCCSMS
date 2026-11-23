@@ -46,6 +46,10 @@ public class SmsDbContext : DbContext
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<UserRoleAssignment> UserRoleAssignments => Set<UserRoleAssignment>();
     public DbSet<AuditEvent> AuditEvents => Set<AuditEvent>();
+    public DbSet<ExternalExaminer> ExternalExaminers => Set<ExternalExaminer>();
+    public DbSet<ExaminerAssignment> ExaminerAssignments => Set<ExaminerAssignment>();
+    public DbSet<ExaminerReport> ExaminerReports => Set<ExaminerReport>();
+    public DbSet<ExaminerPortalToken> ExaminerPortalTokens => Set<ExaminerPortalToken>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -120,6 +124,10 @@ public class SmsDbContext : DbContext
         b.Entity<Permission>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<RolePermission>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<UserRoleAssignment>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<ExternalExaminer>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<ExaminerAssignment>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<ExaminerReport>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<ExaminerPortalToken>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken ct = default)

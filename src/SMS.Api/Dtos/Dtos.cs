@@ -67,3 +67,7 @@ public record UserRoleDto(int Id, string Username, string RoleName, int? CampusI
 public record UpsertUserRoleDto(string Username, string RoleName, int? CampusId);
 
 public record AuditEventDto(int Id, string Timestamp, string Actor, string Action, string EntityType, string? EntityId, string? Before, string? After, string? Reason);
+
+public record ExaminerDto(int Id, string FirstName, string LastName, string? Email, string? Institution, string Status, bool ConflictDeclarationRecorded, bool HasConflict);
+public record UpsertExaminerDto(string FirstName, string LastName, string? Email, string? Institution);
+public record AssignmentDto(int Id, int ExaminerId, int? ProgrammeId, int? TermId, string Stage);

@@ -997,6 +997,222 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.ToTable("ExamRoomAllocations");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.ExaminerAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("ExaminerId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("PackageDispatchedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("ProgrammeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stage")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TermId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExaminerId");
+
+                    b.HasIndex("ProgrammeId");
+
+                    b.HasIndex("TermId");
+
+                    b.ToTable("ExaminerAssignments");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ExaminerPortalToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("ExaminerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("ExpiresUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("Revoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExaminerId");
+
+                    b.ToTable("ExaminerPortalTokens");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ExaminerReport", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ActionOwner")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ActionPlan")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("ActionsComplete")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("AssignmentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CorrectiveActions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Recommendations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubmittedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("SubmittedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssignmentId");
+
+                    b.ToTable("ExaminerReports");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ExternalExaminer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateOnly?>("AppointmentEnd")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("AppointmentStart")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("ConflictDeclarationRecorded")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ConflictDetails")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContractReference")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("HasConflict")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Institution")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ExternalExaminers");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.FeeType", b =>
                 {
                     b.Property<int>("Id")
@@ -2245,6 +2461,53 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Navigation("Room");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.ExaminerAssignment", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.ExternalExaminer", "Examiner")
+                        .WithMany("Assignments")
+                        .HasForeignKey("ExaminerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMS.Domain.Entities.Programme", "Programme")
+                        .WithMany()
+                        .HasForeignKey("ProgrammeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("SMS.Domain.Entities.Term", "Term")
+                        .WithMany()
+                        .HasForeignKey("TermId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Examiner");
+
+                    b.Navigation("Programme");
+
+                    b.Navigation("Term");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ExaminerPortalToken", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.ExternalExaminer", "Examiner")
+                        .WithMany()
+                        .HasForeignKey("ExaminerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Examiner");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ExaminerReport", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.ExaminerAssignment", "Assignment")
+                        .WithMany("Reports")
+                        .HasForeignKey("AssignmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Assignment");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.FinancialTransaction", b =>
                 {
                     b.HasOne("SMS.Domain.Entities.FeeType", "FeeType")
@@ -2412,6 +2675,16 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("Results");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ExaminerAssignment", b =>
+                {
+                    b.Navigation("Reports");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ExternalExaminer", b =>
+                {
+                    b.Navigation("Assignments");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.GradeScheme", b =>

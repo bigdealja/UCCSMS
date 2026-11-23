@@ -22,6 +22,7 @@ using SMS.Infrastructure.Assistant;
 using SMS.Infrastructure.Pdf;
 using SMS.Infrastructure.Security;
 using SMS.Infrastructure.Audit;
+using SMS.Infrastructure.Examiners;
 using SMS.Application.Ai;
 using SMS.Infrastructure.Ai;
 using SMS.Infrastructure.Persistence;
@@ -99,6 +100,7 @@ public static class DependencyInjection
         services.AddScoped<AssistantService>();
         services.AddScoped<PdfService>();
         services.AddScoped<PermissionResolver>();
+        services.AddScoped<ExaminerService>();
         return services;
     }
 }

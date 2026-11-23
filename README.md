@@ -113,7 +113,8 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **9 — AI assistant layer** ✅ | `IAiAssistant` (pluggable, off by default). (a) Admissions: recommends a category + flags missing docs, a human approves. (b) Staff/student Q&A grounded in the policy library + the asker's own records. |
 | **10 — Notifications & KPIs** ✅ | Inbox + rule-based alerts (overdue cases, exam clashes), executive KPI dashboard across modules |
 | **Grade governance** ✅ | Grade-change register (reason codes, original preserved, second-person approval), withheld grades, pre-publication reconciliation |
-| **10b — Integrations & modules** | External examiners, scripts/custody, HR provider, question papers |
+| **External examiners** ✅ | Register, conflict declarations (gating appointment), 11-stage assignment/package workflow, reports + action plans, time-limited examiner portal |
+| **10b — Remaining modules** | Scripts/custody, question papers, HR provider, assessment-operations register |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
@@ -368,6 +369,24 @@ applications). More templates (certificates, enrolment letters) plug into the sa
 
 > **Licensing:** QuestPDF is used under its free **Community** licence (set in code). Institutions
 > above QuestPDF's revenue threshold must obtain a QuestPDF **Professional** licence.
+
+## External examiner management
+
+Covers the external-examiner lifecycle from the EMS brief:
+
+- **Register** of external examiners with institution, appointment and contract reference.
+- **Conflict-of-interest declaration** — recorded per examiner; **appointment is blocked** until a
+  declaration is on file, and blocked entirely if a conflict is declared.
+- **11-stage assignment/package workflow** (Nominated → ConflictCheck → Appointed → ContractIssued
+  → ContractSigned → PackagePreparation → PackageDispatched → UnderReview → ReportReceived →
+  ActionPlan → Completed, plus Cancelled); stages only move forward.
+- **Reports + action plans** — examiners submit a report (advancing the stage); Deans/HODs attach an
+  action plan with an owner and corrective actions.
+- **Time-limited examiner portal** — a token (default 30 days) lets an external examiner view their
+  own assignments at `GET /api/examinerportal/{token}` without a staff account.
+
+Management API under `/api/examiners/*` (permission `examiners.manage`: Registrar, Examination
+Officer, Dean, Admin). A React **External Examiners** page drives it.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,
