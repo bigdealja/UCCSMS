@@ -13,6 +13,8 @@ builder.Services.AddSwaggerGen(o =>
 
 // --- Infrastructure (SQL Server via EF Core) ---
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<SMS.Infrastructure.Audit.ICurrentUserAccessor, SMS.Api.Auth.HttpCurrentUserAccessor>();
 
 // --- AuthN: OIDC/JWT from self-hosted Keycloak (shared with Moodle for SSO) ---
 var authority = builder.Configuration["Auth:Authority"]; // e.g. https://auth.your-institution.edu/realms/sms

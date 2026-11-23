@@ -17,6 +17,7 @@ public static class Permissions
         ("cases.read", "View cases"), ("cases.create", "Raise cases"), ("cases.approve", "Approve cases"),
         ("reports.read", "View reports/KPIs"), ("assistant.use", "Use the assistant"),
         ("pdf.generate", "Generate PDFs"), ("admin.manage", "Manage roles & users"),
+        ("audit.read", "View the audit log"),
     };
 
     public static readonly Dictionary<string, string[]> RoleMap = new()
@@ -24,13 +25,13 @@ public static class Permissions
         ["Admin"] = All.Select(p => p.Key).ToArray(),
         ["Registrar"] = new[] { "students.read","students.write","admissions.read","admissions.decide","registration.write",
             "grades.read","grades.change.approve","documents.read","documents.write","cases.read","cases.create","cases.approve",
-            "reports.read","pdf.generate","exams.manage" },
+            "reports.read","pdf.generate","exams.manage","audit.read" },
         ["AdmissionsOfficer"] = new[] { "admissions.read","admissions.decide","students.read","documents.read","documents.write","cases.read","cases.create","pdf.generate" },
         ["ExaminationOfficer"] = new[] { "exams.manage","exams.schedule","grades.read","grades.change.propose","cases.read","cases.create","reports.read","pdf.generate" },
         ["Lecturer"] = new[] { "grades.read","grades.import","grades.change.propose","cases.read","cases.create","assistant.use" },
         ["Dean"] = new[] { "grades.change.approve","cases.approve","reports.read","students.read" },
         ["FinanceOfficer"] = new[] { "finance.read","finance.post","students.read","reports.read" },
         ["Student"] = new[] { "assistant.use" },
-        ["Auditor"] = new[] { "students.read","admissions.read","grades.read","finance.read","documents.read","cases.read","reports.read" },
+        ["Auditor"] = new[] { "students.read","admissions.read","grades.read","finance.read","documents.read","cases.read","reports.read","audit.read" },
     };
 }

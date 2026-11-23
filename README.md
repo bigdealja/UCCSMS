@@ -153,6 +153,23 @@ Bucket,AccessKey,SecretKey}` — for on-prem MinIO, point at its endpoint with p
 > Automated generation of PDFs/Word (transcripts, letters — the legacy iTextSharp/DocX feature)
 > is scoped as a follow-on sub-phase.
 
+## Audit log
+
+An **append-only** audit trail, captured automatically — the EMS brief's "every change records who,
+what, when, before and after; history cannot be edited or deleted".
+
+- **Automatic change auditing** — an EF Core `SaveChanges` interceptor records a Create/Update/Delete
+  `AuditEvent` for every entity change across the system (with the acting user and the changed
+  properties' before → after values; soft-deletes are recorded as deletes; enums shown by name).
+  No per-service code needed.
+- **Access logging** — views/downloads of restricted records are logged explicitly (e.g. transcript
+  downloads) via `IAuditLogger`.
+- **Immutable & read-only** — audit events are never updated or deleted, and the API exposes only a
+  read endpoint (`GET /api/audit`, permission `audit.read`, held by Admin, Registrar, Auditor).
+- A React **Audit Trail** page provides a filterable, paged view.
+
+## Roles & access (RBAC)
+
 ## Roles & access (RBAC)
 
 Role-based access control with a configurable role→permission model.

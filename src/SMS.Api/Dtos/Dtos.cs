@@ -65,3 +65,5 @@ public record ProposeGradeChangeDto(int EnrollmentId, string? ProposedLetterGrad
 
 public record UserRoleDto(int Id, string Username, string RoleName, int? CampusId);
 public record UpsertUserRoleDto(string Username, string RoleName, int? CampusId);
+
+public record AuditEventDto(int Id, string Timestamp, string Actor, string Action, string EntityType, string? EntityId, string? Before, string? After, string? Reason);

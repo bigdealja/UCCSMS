@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using SMS.Application.GradeImport;
 using SMS.Application.Moodle;
 using SMS.Infrastructure.GradeImport;
@@ -20,6 +21,7 @@ using SMS.Infrastructure.Notifications;
 using SMS.Infrastructure.Assistant;
 using SMS.Infrastructure.Pdf;
 using SMS.Infrastructure.Security;
+using SMS.Infrastructure.Audit;
 using SMS.Application.Ai;
 using SMS.Infrastructure.Ai;
 using SMS.Infrastructure.Persistence;
@@ -30,13 +32,17 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
     {
+        services.AddScoped<AuditSaveChangesInterceptor>();
+        services.TryAddScoped<ICurrentUserAccessor, SystemCurrentUser>();
+        services.AddScoped<IAuditLogger, AuditLogger>();
+
         // Connection string comes from env/secret file (SMS_DB), NEVER from source.
         var cs = config.GetConnectionString("Sms") ?? Environment.GetEnvironmentVariable("SMS_DB");
         if (!string.IsNullOrWhiteSpace(cs))
-            services.AddDbContext<SmsDbContext>(o => o.UseSqlServer(cs));
+            services.AddDbContext<SmsDbContext>((sp, o) => o.UseSqlServer(cs).AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>()));
         else
             // Demo / no-DB mode: run entirely in memory (used for previews and local demos).
-            services.AddDbContext<SmsDbContext>(o => o.UseInMemoryDatabase("sms-demo"));
+            services.AddDbContext<SmsDbContext>((sp, o) => o.UseInMemoryDatabase("sms-demo").AddInterceptors(sp.GetRequiredService<AuditSaveChangesInterceptor>()));
 
         services.AddScoped<IGradeFileParser, SpreadsheetGradeFileParser>();
         services.AddScoped<GradeImportService>();

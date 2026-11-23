@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SMS.Infrastructure.Pdf;
+using SMS.Infrastructure.Audit;
 
 namespace SMS.Api.Controllers;
 
@@ -10,13 +11,15 @@ namespace SMS.Api.Controllers;
 public class PdfController : ControllerBase
 {
     private readonly PdfService _pdf;
-    public PdfController(PdfService pdf) => _pdf = pdf;
+    private readonly IAuditLogger _audit;
+    public PdfController(PdfService pdf, IAuditLogger audit) { _pdf = pdf; _audit = audit; }
 
     [SMS.Api.Auth.HasPermission("pdf.generate")]
     [HttpGet("transcript/{studentId:int}")]
     public async Task<IActionResult> Transcript(int studentId, CancellationToken ct)
     {
-        try { return File(await _pdf.TranscriptAsync(studentId, ct), "application/pdf", $"transcript-{studentId}.pdf"); }
+        try { await _audit.LogAccessAsync("Download", "Transcript", studentId.ToString(), ct: ct);
+              return File(await _pdf.TranscriptAsync(studentId, ct), "application/pdf", $"transcript-{studentId}.pdf"); }
         catch (InvalidOperationException ex) { return NotFound(ex.Message); }
     }
 

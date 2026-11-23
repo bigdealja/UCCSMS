@@ -6,6 +6,7 @@ import AdmissionsPage from './pages/AdmissionsPage'
 import DashboardPage from './pages/DashboardPage'
 import AssistantPage from './pages/AssistantPage'
 import AccessPage from './pages/AccessPage'
+import AuditPage from './pages/AuditPage'
 import StudentForm from './pages/StudentForm'
 import GradeImportPage from './pages/GradeImportPage'
 import MoodlePage from './pages/MoodlePage'
@@ -35,6 +36,7 @@ function Shell() {
           <NavLink to="/grade-governance">Grade Governance</NavLink>
           <NavLink to="/assistant">Assistant</NavLink>
           <NavLink to="/access">Access &amp; Roles</NavLink>
+          <NavLink to="/audit">Audit Trail</NavLink>
           <NavLink to="/cases">Cases</NavLink>
           <NavLink to="/documents">Documents</NavLink>
           <NavLink to="/finance">Finance</NavLink>
@@ -56,6 +58,7 @@ function Shell() {
           <Route path="/grade-governance" element={<GradeGovernancePage />} />
           <Route path="/assistant" element={<AssistantPage />} />
           <Route path="/access" element={<AccessPage />} />
+          <Route path="/audit" element={<AuditPage />} />
           <Route path="/cases" element={<CasesPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/finance" element={<FinancePage />} />
