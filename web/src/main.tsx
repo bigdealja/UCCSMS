@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom'
 import StudentsPage from './pages/StudentsPage'
+import AdmissionsPage from './pages/AdmissionsPage'
 import StudentForm from './pages/StudentForm'
 import GradeImportPage from './pages/GradeImportPage'
 import MoodlePage from './pages/MoodlePage'
@@ -18,6 +19,7 @@ function Shell() {
         <h1>SMS</h1>
         <nav>
           <NavLink to="/" end>Dashboard</NavLink>
+          <NavLink to="/admissions">Admissions &amp; CRM</NavLink>
           <NavLink to="/students">Students</NavLink>
           <NavLink to="/grade-import">Grade Import</NavLink>
           <a className="muted" title="Coming soon">Registration</a>
@@ -31,6 +33,7 @@ function Shell() {
       <main className="content">
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/admissions" element={<AdmissionsPage />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/students/new" element={<StudentForm />} />
           <Route path="/students/:id/edit" element={<StudentForm />} />

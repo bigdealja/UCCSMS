@@ -12,6 +12,9 @@ using SMS.Application.Accounting;
 using SMS.Infrastructure.Accounting;
 using SMS.Infrastructure.Finance;
 using SMS.Infrastructure.Grading;
+using SMS.Application.Crm;
+using SMS.Infrastructure.Crm;
+using SMS.Infrastructure.Admissions;
 using SMS.Infrastructure.Persistence;
 
 namespace SMS.Infrastructure;
@@ -54,6 +57,15 @@ public static class DependencyInjection
             services.AddScoped<IAccountingProvider, NullAccountingProvider>();
         services.AddScoped<FinanceService>();
         services.AddScoped<GradingService>();
+
+        // CRM is provider-agnostic: built-in, or an external CRM (Mautic, Salesforce, …) by config.
+        services.Configure<CrmOptions>(config.GetSection("Crm"));
+        var crmProvider = config.GetSection("Crm")["Provider"] ?? "BuiltIn";
+        if (string.Equals(crmProvider, "Webhook", StringComparison.OrdinalIgnoreCase))
+            services.AddHttpClient<ICrmProvider, WebhookCrmProvider>();
+        else
+            services.AddScoped<ICrmProvider, BuiltInCrmProvider>();
+        services.AddScoped<AdmissionsService>();
         return services;
     }
 }

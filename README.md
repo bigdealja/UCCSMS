@@ -98,7 +98,7 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **4 — Documents** ✅ | Versioned document store on MinIO/S3 (filesystem in dev), upload/version/download, per-student + categories. Automated PDF/Word *generation* is a later sub-phase. |
 | **5 — Finance + Sage 300** | Charges, fees, payments, refunds, ACH; Sage AR sync over HTTPS |
 | **6a — Grade-scheme engine** ✅ | UCC Examination Policy scales (Bachelors/Masters/Occupational), special grades, pass rules, credit-weighted GPA — configurable & versioned |
-| **6b — Admissions / CRM lifecycle** | Leads → application → document processing → admission; built-in + pluggable `ICrmProvider` |
+| **6b — Admissions / CRM lifecycle** ✅ | Leads → application → review → decision (second-person) → offer response → student; built-in CRM + public web capture + pluggable `ICrmProvider` |
 | **7 — Exam expansion** | Rooms/venues, room allocation, clash detection, special arrangements, invigilation |
 | **8 — Case management** | 14 case types (queries, appeals, irregularities, remarks …) |
 | **9 — AI assistant layer** | `IAiAssistant`: lead/application processing + staff/student help (human-in-the-loop) |
@@ -179,6 +179,27 @@ AM, EC). A programme's **level** selects its scheme by effective date.
 - GPA = Σ(quality points × credits) ÷ Σ(credits), excluding grades that don't count (e.g. `I`).
 - `GET /api/grading/schemes`, `GET /api/grading/evaluate?programmeId=&coursework=&eosa=&final=`,
   `GET /api/grading/students/{id}/gpa`.
+
+## Admissions & CRM (Phase 6b)
+
+Covers the front of the student lifecycle per the UCC Admissions Policy, **as one module in the
+platform** (no separate system):
+
+- **Built-in CRM** — leads captured, qualified and converted. Your website posts leads directly to
+  the public endpoint `POST /api/public/lead` (an in-house replacement for Mautic; an optional
+  shared secret deters spam). No external marketing tool required.
+- **Pluggable lead sync** — `ICrmProvider`: `BuiltIn` (default) or a generic **`Webhook`** that
+  pushes leads to any external system (another CRM, an automation tool, a custom endpoint).
+  Named vendor providers (Salesforce, HubSpot) can be added later without touching admissions logic.
+- **Application lifecycle** — submit (automatic Offer of Admission), assign/review, document
+  verification, **decision** with the policy's admission categories (Full Acceptance, Full-to-Core,
+  Conditional Class 1/2, Mature Entrant, Provisional), **offer response** (accept/decline/defer),
+  and **convert an accepted applicant into a Student** — joining admissions to registration.
+- **Segregation of duties** — the officer who reviews an application cannot approve its decision
+  (second-person approval), per the Admissions Policy and the EMS brief.
+
+API under `/api/admissions/*` (leads, applications, decision, offer-response, convert-to-student)
+and `POST /api/public/lead`. Config: `Crm:Provider`, `Crm:CaptureSecret`, `Crm:Webhook:Url`.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

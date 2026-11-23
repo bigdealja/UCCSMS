@@ -34,3 +34,13 @@ public record PaymentDto(decimal Amount, string Method, string? Reference, strin
 
 public record GradeBandDto(string Letter, double? MinPercent, double? MaxPercent, double QualityPoints, bool IsPass, bool CountsInGpa, bool IsSpecial);
 public record GradeSchemeDto(int Id, string Name, string Level, string EffectiveFrom, double OverallPassMark, double CourseworkPassMark, double EosaPassMark, IReadOnlyList<GradeBandDto> Bands);
+
+public record LeadDto(int Id, string FirstName, string LastName, string? Email, string? Phone, string? Source, string Status, int? ProgrammeOfInterestId);
+public record UpsertLeadDto(string FirstName, string LastName, string? Email, string? Phone, string? Source, int? ProgrammeOfInterestId);
+public record ConvertLeadDto(int ProgrammeId, int IntakeTermId);
+public record ApplicationDto(int Id, string ApplicationNumber, string FirstName, string LastName, string? Email, int ProgrammeId, int IntakeTermId, string Status, string Decision, string OfferResponse, string? AssignedOfficer, string? DecidedBy, int? StudentId);
+public record DecisionDto(string Category, string? DecidedBy, string? Notes);
+public record OfferResponseDto(string Response);
+public record ConvertToStudentDto(string StudentNumber);
+
+public record PublicLeadDto(string FirstName, string LastName, string? Email, string? Phone, string? Source, int? ProgrammeOfInterestId);
