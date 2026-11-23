@@ -117,7 +117,8 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **Question papers** ✅ | Expected-paper register, versions, vetting + external-review gate, approval/release, secure print runs, dispatch, return & witnessed destruction, emergency withdrawal |
 | **Scripts & custody** ✅ | Script bundles with full chain of custody, scanning, issue-to-marker, marked uploads, retention + witnessed disposal |
 | **Assessment operations register** ✅ | One record per sitting; milestones drive auto stage + status (ready/at-risk/overdue/blocked/complete) + needs-attention view |
-| **10b — Remaining modules** | HR provider, advisement/graduation, legacy student services |
+| **Advisement & graduation** ✅ | Programme progress (credits earned/required, GPA, outstanding/failed courses) + graduation-eligibility verdict |
+| **10b — Remaining modules** | HR provider, legacy student services |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
@@ -469,6 +470,21 @@ The operational heartbeat from the EMS brief — "where is every sitting":
 
 API under `/api/assessmentops/*` (permission `exams.manage`). A React **Assessment Ops** page shows
 the register with a needs-attention filter.
+
+## Advisement & graduation check
+
+Student academic progression against the programme curriculum:
+
+- **Progress** — `GET /api/advisement/students/{id}/progress`: measures a student against their
+  programme's courses and credit requirement using the policy grade scheme — **credits earned**,
+  **completed / outstanding / failed** courses, and **GPA**. A course counts as passed when its
+  letter grade is a pass in the scheme.
+- **Graduation check** — `GET /api/advisement/students/{id}/graduation-check`: an eligibility verdict
+  (eligible only when credits are met, no courses are outstanding, and GPA ≥ the minimum — 2.0
+  undergraduate / Occupational, 3.0 Masters), with the reasons when not.
+
+Permission `students.read`. A React **Advisement** page shows the credit/GPA/outstanding summary,
+the graduation verdict, and the completed/outstanding course lists.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,
