@@ -671,6 +671,9 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsWithheld")
+                        .HasColumnType("bit");
+
                     b.Property<string>("LetterGrade")
                         .HasColumnType("nvarchar(max)");
 
@@ -687,6 +690,9 @@ namespace SMS.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("TermId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WithheldCaseId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1115,6 +1121,72 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.HasIndex("GradeSchemeId");
 
                     b.ToTable("GradeBands");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.GradeChangeRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid?>("ApplyBatchId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DecidedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DecidedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("EnrollmentId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<double?>("OriginalFinalMark")
+                        .HasColumnType("float");
+
+                    b.Property<string>("OriginalLetterGrade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProposedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("ProposedFinalMark")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ProposedLetterGrade")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ReasonCode")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnrollmentId", "Status");
+
+                    b.ToTable("GradeChangeRequests");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.GradeScheme", b =>
@@ -2005,6 +2077,17 @@ namespace SMS.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("GradeScheme");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.GradeChangeRequest", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.Enrollment", "Enrollment")
+                        .WithMany()
+                        .HasForeignKey("EnrollmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Enrollment");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.Lead", b =>

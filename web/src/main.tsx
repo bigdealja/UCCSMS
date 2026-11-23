@@ -14,6 +14,7 @@ import CasesPage from './pages/CasesPage'
 import DocumentsPage from './pages/DocumentsPage'
 import FinancePage from './pages/FinancePage'
 import GradingPage from './pages/GradingPage'
+import GradeGovernancePage from './pages/GradeGovernancePage'
 import './index.css'
 
 function Shell() {
@@ -30,6 +31,7 @@ function Shell() {
           <NavLink to="/exams">Examinations</NavLink>
           <NavLink to="/exam-scheduling">Exam Scheduling</NavLink>
           <NavLink to="/grading">Grade Schemes</NavLink>
+          <NavLink to="/grade-governance">Grade Governance</NavLink>
           <NavLink to="/assistant">Assistant</NavLink>
           <NavLink to="/cases">Cases</NavLink>
           <NavLink to="/documents">Documents</NavLink>
@@ -49,6 +51,7 @@ function Shell() {
           <Route path="/exams" element={<ExamsPage />} />
           <Route path="/exam-scheduling" element={<ExamSchedulingPage />} />
           <Route path="/grading" element={<GradingPage />} />
+          <Route path="/grade-governance" element={<GradeGovernancePage />} />
           <Route path="/assistant" element={<AssistantPage />} />
           <Route path="/cases" element={<CasesPage />} />
           <Route path="/documents" element={<DocumentsPage />} />

@@ -59,3 +59,6 @@ public record CreateCaseDto(int CaseTypeId, string Title, string? Description, i
 public record AskDto(string Question, int? StudentId);
 public record KnowledgeArticleDto(int Id, string Title, string Category, string Body, string? Tags);
 public record UpsertArticleDto(string Title, string Category, string Body, string? Tags);
+
+public record GradeChangeDto(int Id, int EnrollmentId, string? OriginalLetterGrade, string? ProposedLetterGrade, string ReasonCode, string Status, string? ProposedBy, string? DecidedBy);
+public record ProposeGradeChangeDto(int EnrollmentId, string? ProposedLetterGrade, double? ProposedFinalMark, string ReasonCode, string? Reason);

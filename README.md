@@ -103,7 +103,8 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **8 — Case management** ✅ | 14 configurable case types, working-day due dates, second-person approval, overdue/due-soon, dashboard, append-only history |
 | **9 — AI assistant layer** ✅ | `IAiAssistant` (pluggable, off by default). (a) Admissions: recommends a category + flags missing docs, a human approves. (b) Staff/student Q&A grounded in the policy library + the asker's own records. |
 | **10 — Notifications & KPIs** ✅ | Inbox + rule-based alerts (overdue cases, exam clashes), executive KPI dashboard across modules |
-| **10b — Governance & integrations** | Grade governance, external examiners, scripts/custody, HR provider |
+| **Grade governance** ✅ | Grade-change register (reason codes, original preserved, second-person approval), withheld grades, pre-publication reconciliation |
+| **10b — Integrations & modules** | External examiners, scripts/custody, HR provider, question papers |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
@@ -288,6 +289,25 @@ API: `POST /api/assistant/ask` (question + optional studentId), `GET/POST /api/a
 (manage the policy library). A React **Assistant** page provides the chat UI.
 
 > Production note: RBAC must ensure a student can only request their own record facts.
+
+## Grade governance
+
+Controls on changing and publishing grades, from both policy documents:
+
+- **Grade-change register** — a change captures the **original** letter/mark (never overwritten)
+  and the proposed values with a **reason code** (clerical error, re-mark, appeal, late coursework,
+  incomplete cleared, integrity outcome). The enrolment grade changes only on approval; after an
+  error you raise a new request (a new version), never edit history.
+- **Second-person approval** — the approver cannot be the proposer. On approval the change is
+  applied under a traceable batch id (the same mechanism as imports/Moodle/exam posting).
+- **Withheld grades** — a grade can be withheld pending an integrity case (linked by case id) and
+  released later.
+- **Pre-publication reconciliation** — `GET /api/gradegovernance/pre-publication/{termId}` flags
+  ungraded enrolments, withheld grades and pending grade-change requests before a term's results
+  are released.
+
+API under `/api/gradegovernance/*`. A React **Grade Governance** page manages the register and
+runs the pre-publication check.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

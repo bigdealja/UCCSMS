@@ -26,6 +26,10 @@ public class Enrollment : BaseEntity
 
     // Provenance / undo for bulk grade imports and Moodle sync
     public Guid? ImportBatchId { get; set; }
-    public string? GradeSource { get; set; }   // "Manual" | "Import" | "Moodle"
+    public string? GradeSource { get; set; }   // "Manual" | "Import" | "Moodle" | "Exam" | "GradeChange"
+
+    // Grade governance
+    public bool IsWithheld { get; set; }         // e.g. pending an integrity case
+    public int? WithheldCaseId { get; set; }
     public DateTimeOffset? GradedUtc { get; set; }
 }

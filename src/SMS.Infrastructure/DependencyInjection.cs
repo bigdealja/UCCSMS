@@ -63,6 +63,7 @@ public static class DependencyInjection
             services.AddScoped<IAccountingProvider, NullAccountingProvider>();
         services.AddScoped<FinanceService>();
         services.AddScoped<GradingService>();
+        services.AddScoped<GradeGovernanceService>();
 
         // CRM is provider-agnostic: built-in, or an external CRM (Mautic, Salesforce, …) by config.
         services.Configure<CrmOptions>(config.GetSection("Crm"));
