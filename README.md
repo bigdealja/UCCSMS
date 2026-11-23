@@ -99,7 +99,7 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **5 — Finance + Sage 300** | Charges, fees, payments, refunds, ACH; Sage AR sync over HTTPS |
 | **6a — Grade-scheme engine** ✅ | UCC Examination Policy scales (Bachelors/Masters/Occupational), special grades, pass rules, credit-weighted GPA — configurable & versioned |
 | **6b — Admissions / CRM lifecycle** ✅ | Leads → application → review → decision (second-person) → offer response → student; built-in CRM + public web capture + pluggable `ICrmProvider` |
-| **7 — Exam expansion** | Rooms/venues, room allocation, clash detection, special arrangements, invigilation |
+| **7 — Exam expansion** ✅ | Rooms/venues, capacity-checked room allocation, invigilator assignment, special arrangements, automatic clash detection |
 | **8 — Case management** | 14 case types (queries, appeals, irregularities, remarks …) |
 | **9 — AI assistant layer** ✅ (admissions) | `IAiAssistant` (pluggable, off by default); AI recommends an admission category + flags missing docs, a human approves. Staff/student Q&A assistant is the next AI increment. |
 | **10 — Governance & integrations** | Grade governance, external examiners, scripts/custody, HR provider, notifications/KPIs |
@@ -219,6 +219,23 @@ human decides.**
 - A human then approves through the existing **second-person** `/decision` workflow.
 
 `GET /api/admissions/ai/health` reports the provider and whether it's configured.
+
+## Exam scheduling (Phase 7)
+
+Extends the Examinations module with the EMS brief's timetabling capabilities:
+
+- **Rooms / venues** per campus with capacity; **room allocation** to exams (rejected if seats
+  exceed capacity).
+- **Invigilator assignment** (chief/assistant) to exams.
+- **Special arrangements** per student (extra time, separate room, reader, scribe, assistive
+  technology, rest breaks, large print) — approved, and **extra time extends that student's
+  effective exam window** for clash checking.
+- **Automatic clash detection** across a term's scheduled exams:
+  student overlaps, double-booked rooms, double-booked invigilators, over-capacity sittings, and
+  too many exams a day (configurable limit). Each clash is an Error or Warning with a description.
+
+API under `/api/examscheduling/*` (rooms, allocate-room, invigilators, arrangements,
+`clashes/{termId}`). A React **Exam Scheduling** page manages rooms and runs the clash check.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

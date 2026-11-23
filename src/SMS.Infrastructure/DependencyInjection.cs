@@ -39,6 +39,7 @@ public static class DependencyInjection
         services.AddHttpClient<IMoodleClient, MoodleClient>();
         services.AddScoped<MoodleSyncService>();
         services.AddScoped<ExamService>();
+        services.AddScoped<ExamSchedulingService>();
 
         services.Configure<StorageOptions>(config.GetSection("Storage"));
         var provider = config.GetSection("Storage")["Provider"] ?? "FileSystem";

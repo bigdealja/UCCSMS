@@ -44,3 +44,10 @@ public record OfferResponseDto(string Response);
 public record ConvertToStudentDto(string StudentNumber);
 
 public record PublicLeadDto(string FirstName, string LastName, string? Email, string? Phone, string? Source, int? ProgrammeOfInterestId);
+
+public record RoomDto(int Id, string Code, string Name, int CampusId, int Capacity);
+public record UpsertRoomDto(string Code, string Name, int CampusId, int Capacity);
+public record AllocateRoomDto(int RoomId, int Seats);
+public record AssignInvigilatorDto(int StaffFacultyId, string Role);
+public record ArrangementDto(int Id, int StudentId, string Type, int ExtraTimePercent, string? Details, bool Approved);
+public record UpsertArrangementDto(int StudentId, string Type, int ExtraTimePercent, string? Details, bool Approved);

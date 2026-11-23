@@ -20,6 +20,10 @@ public class SmsDbContext : DbContext
     public DbSet<Question> Questions => Set<Question>();
     public DbSet<ExamQuestion> ExamQuestions => Set<ExamQuestion>();
     public DbSet<ExamResult> ExamResults => Set<ExamResult>();
+    public DbSet<Room> Rooms => Set<Room>();
+    public DbSet<ExamRoomAllocation> ExamRoomAllocations => Set<ExamRoomAllocation>();
+    public DbSet<ExamInvigilator> ExamInvigilators => Set<ExamInvigilator>();
+    public DbSet<SpecialArrangement> SpecialArrangements => Set<SpecialArrangement>();
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<DocumentVersion> DocumentVersions => Set<DocumentVersion>();
     public DbSet<FeeType> FeeTypes => Set<FeeType>();
@@ -47,6 +51,9 @@ public class SmsDbContext : DbContext
         b.Entity<Enrollment>().HasIndex(x => x.ImportBatchId);
 
         b.Entity<ExamResult>().HasIndex(x => new { x.ExamId, x.StudentId }).IsUnique();
+        b.Entity<Room>().HasIndex(x => x.Code).IsUnique();
+        b.Entity<ExamRoomAllocation>().HasIndex(x => new { x.ExamId, x.RoomId }).IsUnique();
+        b.Entity<SpecialArrangement>().HasIndex(x => x.StudentId);
         b.Entity<ExamQuestion>().HasIndex(x => new { x.ExamId, x.QuestionId }).IsUnique();
         b.Entity<Document>().HasIndex(x => new { x.StudentId, x.Category });
         b.Entity<DocumentVersion>().HasIndex(x => new { x.DocumentId, x.VersionNumber }).IsUnique();
@@ -75,6 +82,10 @@ public class SmsDbContext : DbContext
         b.Entity<Question>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<ExamQuestion>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<ExamResult>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<Room>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<ExamRoomAllocation>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<ExamInvigilator>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<SpecialArrangement>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<Document>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<DocumentVersion>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<FeeType>().HasQueryFilter(x => !x.IsDeleted);
