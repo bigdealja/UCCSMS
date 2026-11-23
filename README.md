@@ -142,6 +142,25 @@ Every API endpoint is `[Authorize]`. In **Development with no Keycloak configure
 auto-authenticates requests as a dev user so the UI works out of the box. Production always uses
 real OIDC/JWT bearer tokens from Keycloak.
 
+## Student finance & accounting integration (Phase 5)
+
+The SMS keeps its **own authoritative ledger** (charges, payments, refunds, adjustments → a
+running per-student balance) and, optionally, mirrors each entry to an external accounting system.
+
+**The accounting integration is provider-agnostic.** Finance logic depends only on
+`IAccountingProvider` — never on a specific vendor:
+
+- `None` (default) — internal ledger only; posts nowhere external.
+- `Sage300` — posts AR documents to Sage 300's Web API **over HTTPS** (the legacy app used plain
+  HTTP; this doesn't).
+- **To add QuickBooks, Xero, or any other system later:** implement `IAccountingProvider`
+  (one class), register it in `DependencyInjection` under its name, and set
+  `Accounting:Provider`. **No change to the finance module.**
+
+API: `GET /api/finance/accounting/health`, `GET/POST /api/finance/fee-types`,
+`GET /api/finance/students/{id}/statement`, `POST .../charges`, `POST .../payments`.
+Config (secrets via env): `Accounting:Provider`, `Accounting:Sage300:{BaseUrl,Company,Username,Password}`.
+
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,
 `SMS_Apply`, `NCUChapel`. The reverse-engineered table and stored-procedure names give a

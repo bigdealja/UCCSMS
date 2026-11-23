@@ -26,3 +26,8 @@ public record AddExamQuestionDto(int QuestionId, double? Marks);
 public record RecordResultDto(int StudentId, double Score);
 
 public record DocumentDto(int Id, string Title, string Category, int? StudentId, string? Description, int CurrentVersion);
+
+public record FeeTypeDto(int Id, string Code, string Name, decimal DefaultAmount, string? DistributionCode);
+public record UpsertFeeTypeDto(string Code, string Name, decimal DefaultAmount, string? DistributionCode);
+public record ChargeDto(int? TermId, int? FeeTypeId, decimal Amount, string? Description);
+public record PaymentDto(decimal Amount, string Method, string? Reference, string? Description, bool IsRefund = false);

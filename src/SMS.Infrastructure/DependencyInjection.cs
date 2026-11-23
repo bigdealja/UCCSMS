@@ -8,6 +8,9 @@ using SMS.Infrastructure.Moodle;
 using SMS.Infrastructure.Exams;
 using SMS.Application.Documents;
 using SMS.Infrastructure.Documents;
+using SMS.Application.Accounting;
+using SMS.Infrastructure.Accounting;
+using SMS.Infrastructure.Finance;
 using SMS.Infrastructure.Persistence;
 
 namespace SMS.Infrastructure;
@@ -38,6 +41,17 @@ public static class DependencyInjection
         else
             services.AddScoped<IDocumentStorage, FileSystemDocumentStorage>();
         services.AddScoped<DocumentService>();
+
+        // Accounting integration is provider-agnostic: choose the implementation by config.
+        // Add a new provider (QuickBooks, Xero, …) by implementing IAccountingProvider and
+        // registering it here under its name — the finance module is untouched.
+        services.Configure<AccountingOptions>(config.GetSection("Accounting"));
+        var accProvider = config.GetSection("Accounting")["Provider"] ?? "None";
+        if (string.Equals(accProvider, "Sage300", StringComparison.OrdinalIgnoreCase))
+            services.AddHttpClient<IAccountingProvider, Sage300AccountingProvider>();
+        else
+            services.AddScoped<IAccountingProvider, NullAccountingProvider>();
+        services.AddScoped<FinanceService>();
         return services;
     }
 }

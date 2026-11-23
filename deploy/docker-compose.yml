@@ -46,6 +46,11 @@ services:
       Storage__S3__AccessKey: "${MINIO_ROOT_USER}"
       Storage__S3__SecretKey: "${MINIO_ROOT_PASSWORD}"
       Storage__S3__ForcePathStyle: "true"
+      Accounting__Provider: "${ACCOUNTING_PROVIDER:-None}"
+      Accounting__Sage300__BaseUrl: "${SAGE_BASEURL:-}"
+      Accounting__Sage300__Company: "${SAGE_COMPANY:-}"
+      Accounting__Sage300__Username: "${SAGE_USER:-}"
+      Accounting__Sage300__Password: "${SAGE_PASSWORD:-}"
     depends_on: [ db, auth ]
 
   web:
