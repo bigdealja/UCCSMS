@@ -13,3 +13,14 @@ public record EnrollmentDto(int Id, int StudentId, int CourseId, int TermId, str
                             Guid? ImportBatchId, string? GradeSource);
 
 public record LookupDto(int Id, string Code, string Name);
+
+public record ExamDto(int Id, string Title, int CourseId, int TermId, string? ScheduledStart,
+                      int DurationMinutes, string? Room, double TotalMarks, string Status, int QuestionCount);
+public record UpsertExamDto(string Title, int CourseId, int TermId, string? ScheduledStart,
+                            int DurationMinutes, string? Room);
+public record QuestionDto(int Id, int CourseId, string Type, string Text, double DefaultMarks,
+                          string? OptionsJson, string? CorrectAnswer);
+public record UpsertQuestionDto(int CourseId, string Type, string Text, double DefaultMarks,
+                                string? OptionsJson, string? CorrectAnswer);
+public record AddExamQuestionDto(int QuestionId, double? Marks);
+public record RecordResultDto(int StudentId, double Score);

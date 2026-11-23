@@ -94,7 +94,7 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **0 — Foundation** | Solution, auth, core model, API + SPA, deployment |
 | **1 — Core SIS** ✅ | Students CRUD, Grades + modern Excel/CSV import with mapping, preview & batch undo |
 | **2 — Moodle** ✅ | Course/enrolment provisioning + grade sync + shared SSO |
-| **3 — Examinations** | Exam scheduling, question banks, on-screen exams, grade capture |
+| **3 — Examinations** ✅ | Exam scheduling, question banks, exam assembly, result capture, post-to-gradebook (undoable). On-screen exam delivery is a later sub-phase. |
 | **4 — Documents** | Versioned document store (MinIO), PDF/Word generation, student/staff portals |
 | **5 — Finance + Sage 300** | Charges, fees, payments, refunds, ACH; Sage AR sync over HTTPS |
 | **6 — Remaining modules + migration** | Timetable, Housing, Health, Sports, Chapel; data migration cutover |

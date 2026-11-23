@@ -5,6 +5,7 @@ using SMS.Application.GradeImport;
 using SMS.Application.Moodle;
 using SMS.Infrastructure.GradeImport;
 using SMS.Infrastructure.Moodle;
+using SMS.Infrastructure.Exams;
 using SMS.Infrastructure.Persistence;
 
 namespace SMS.Infrastructure;
@@ -26,6 +27,7 @@ public static class DependencyInjection
         services.Configure<MoodleOptions>(config.GetSection("Moodle"));
         services.AddHttpClient<IMoodleClient, MoodleClient>();
         services.AddScoped<MoodleSyncService>();
+        services.AddScoped<ExamService>();
         return services;
     }
 }
