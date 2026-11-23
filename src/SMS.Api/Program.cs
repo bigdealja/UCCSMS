@@ -16,15 +16,24 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 // --- AuthN: OIDC/JWT from self-hosted Keycloak (shared with Moodle for SSO) ---
 var authority = builder.Configuration["Auth:Authority"]; // e.g. https://auth.your-institution.edu/realms/sms
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(o =>
-    {
-        o.Authority = authority;
-        o.Audience = builder.Configuration["Auth:Audience"] ?? "sms-api";
-        o.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
-        // In development with no IdP configured, don't block the app from starting.
-        o.TokenValidationParameters.ValidateIssuer = !string.IsNullOrEmpty(authority);
-    });
+if (builder.Environment.IsDevelopment() && string.IsNullOrEmpty(authority))
+{
+    // DEV ONLY: no Keycloak configured -> auto-authenticate so the UI works out of the box.
+    builder.Services.AddAuthentication(SMS.Api.Auth.DevAuthHandler.SchemeName)
+        .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, SMS.Api.Auth.DevAuthHandler>(
+            SMS.Api.Auth.DevAuthHandler.SchemeName, _ => { });
+}
+else
+{
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(o =>
+        {
+            o.Authority = authority;
+            o.Audience = builder.Configuration["Auth:Audience"] ?? "sms-api";
+            o.RequireHttpsMetadata = !builder.Environment.IsDevelopment();
+            o.TokenValidationParameters.ValidateIssuer = !string.IsNullOrEmpty(authority);
+        });
+}
 builder.Services.AddAuthorization();
 
 // --- CORS for the React SPA served from the reverse proxy ---

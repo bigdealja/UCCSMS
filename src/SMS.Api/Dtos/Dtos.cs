@@ -24,3 +24,5 @@ public record UpsertQuestionDto(int CourseId, string Type, string Text, double D
                                 string? OptionsJson, string? CorrectAnswer);
 public record AddExamQuestionDto(int QuestionId, double? Marks);
 public record RecordResultDto(int StudentId, double Score);
+
+public record DocumentDto(int Id, string Title, string Category, int? StudentId, string? Description, int CurrentVersion);

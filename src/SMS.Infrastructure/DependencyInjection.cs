@@ -6,6 +6,8 @@ using SMS.Application.Moodle;
 using SMS.Infrastructure.GradeImport;
 using SMS.Infrastructure.Moodle;
 using SMS.Infrastructure.Exams;
+using SMS.Application.Documents;
+using SMS.Infrastructure.Documents;
 using SMS.Infrastructure.Persistence;
 
 namespace SMS.Infrastructure;
@@ -28,6 +30,14 @@ public static class DependencyInjection
         services.AddHttpClient<IMoodleClient, MoodleClient>();
         services.AddScoped<MoodleSyncService>();
         services.AddScoped<ExamService>();
+
+        services.Configure<StorageOptions>(config.GetSection("Storage"));
+        var provider = config.GetSection("Storage")["Provider"] ?? "FileSystem";
+        if (string.Equals(provider, "S3", StringComparison.OrdinalIgnoreCase))
+            services.AddScoped<IDocumentStorage, S3DocumentStorage>();
+        else
+            services.AddScoped<IDocumentStorage, FileSystemDocumentStorage>();
+        services.AddScoped<DocumentService>();
         return services;
     }
 }
