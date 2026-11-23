@@ -19,6 +19,7 @@ using SMS.Infrastructure.Cases;
 using SMS.Infrastructure.Notifications;
 using SMS.Infrastructure.Assistant;
 using SMS.Infrastructure.Pdf;
+using SMS.Infrastructure.Security;
 using SMS.Application.Ai;
 using SMS.Infrastructure.Ai;
 using SMS.Infrastructure.Persistence;
@@ -89,6 +90,7 @@ public static class DependencyInjection
         services.AddScoped<MetricsService>();
         services.AddScoped<AssistantService>();
         services.AddScoped<PdfService>();
+        services.AddScoped<PermissionResolver>();
         return services;
     }
 }

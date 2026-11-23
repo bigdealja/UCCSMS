@@ -12,6 +12,7 @@ public class PdfController : ControllerBase
     private readonly PdfService _pdf;
     public PdfController(PdfService pdf) => _pdf = pdf;
 
+    [SMS.Api.Auth.HasPermission("pdf.generate")]
     [HttpGet("transcript/{studentId:int}")]
     public async Task<IActionResult> Transcript(int studentId, CancellationToken ct)
     {

@@ -43,6 +43,7 @@ public class StudentsController : ControllerBase
         return s is null ? NotFound() : Ok(Map(s));
     }
 
+    [SMS.Api.Auth.HasPermission("students.write")]
     [HttpPost]
     public async Task<ActionResult<StudentDto>> Create(UpsertStudentDto dto, CancellationToken ct)
     {
@@ -55,6 +56,7 @@ public class StudentsController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = s.Id }, Map(s));
     }
 
+    [SMS.Api.Auth.HasPermission("students.write")]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<StudentDto>> Update(int id, UpsertStudentDto dto, CancellationToken ct)
     {
@@ -65,6 +67,7 @@ public class StudentsController : ControllerBase
         return Ok(Map(s));
     }
 
+    [SMS.Api.Auth.HasPermission("students.write")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {

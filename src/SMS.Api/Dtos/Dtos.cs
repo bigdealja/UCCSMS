@@ -62,3 +62,6 @@ public record UpsertArticleDto(string Title, string Category, string Body, strin
 
 public record GradeChangeDto(int Id, int EnrollmentId, string? OriginalLetterGrade, string? ProposedLetterGrade, string ReasonCode, string Status, string? ProposedBy, string? DecidedBy);
 public record ProposeGradeChangeDto(int EnrollmentId, string? ProposedLetterGrade, double? ProposedFinalMark, string ReasonCode, string? Reason);
+
+public record UserRoleDto(int Id, string Username, string RoleName, int? CampusId);
+public record UpsertUserRoleDto(string Username, string RoleName, int? CampusId);

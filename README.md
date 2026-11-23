@@ -144,6 +144,25 @@ Bucket,AccessKey,SecretKey}` — for on-prem MinIO, point at its endpoint with p
 > Automated generation of PDFs/Word (transcripts, letters — the legacy iTextSharp/DocX feature)
 > is scoped as a follow-on sub-phase.
 
+## Roles & access (RBAC)
+
+Role-based access control with a configurable role→permission model.
+
+- **Permission catalogue** (e.g. `students.write`, `admissions.decide`, `grades.change.approve`,
+  `cases.approve`, `finance.post`, `admin.manage`) and **seeded roles** (Admin, Registrar,
+  AdmissionsOfficer, ExaminationOfficer, Lecturer, Dean, FinanceOfficer, Student, Auditor).
+- **Where roles come from** — the identity provider's token role claims (Keycloak) and/or DB
+  `UserRoleAssignment` records. A claims transformation resolves the user's effective permissions
+  on each request and adds them as claims.
+- **Enforcement** — sensitive endpoints carry `[HasPermission("…")]`; a dynamic policy provider +
+  authorization handler check the permission claim. In **Development the dev identity is `Admin`**,
+  so everything works out of the box; production is governed by real roles.
+- **Management** — `GET /api/access/me` (your roles + permissions, drives UI gating),
+  and admin-only role/assignment management under `/api/access/*`. A React **Access & Roles** page.
+- Scope: a `CampusId` on assignments lays the groundwork for campus/school row-level scoping.
+
+> Production note: map your Keycloak realm roles to these role names (or assign via `/api/access`).
+
 ## Development auth
 
 Every API endpoint is `[Authorize]`. In **Development with no Keycloak configured**, the API

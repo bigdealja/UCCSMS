@@ -89,6 +89,7 @@ public class CasesController : ControllerBase
     public Task<IActionResult> Note(int id, NoteBody b, CancellationToken ct) => Act(() => _svc.AddNoteAsync(id, b.Text, User.Identity?.Name ?? "staff", ct));
     [HttpPost("{id:int}/assign")]
     public Task<IActionResult> Assign(int id, AssignBody b, CancellationToken ct) => Act(() => _svc.AssignAsync(id, b.Assignee, User.Identity?.Name ?? "staff", ct));
+    [SMS.Api.Auth.HasPermission("cases.approve")]
     [HttpPost("{id:int}/approve")]
     public Task<IActionResult> Approve(int id, CancellationToken ct) => Act(() => _svc.ApproveAsync(id, User.Identity?.Name ?? "approver", ct));
     [HttpPost("{id:int}/resolve")]

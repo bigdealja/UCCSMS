@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\src\SMS.Application\SMS.Application.csproj" />
     <ProjectReference Include="..\..\src\SMS.Infrastructure\SMS.Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\SMS.Domain\SMS.Domain.csproj" />
+    <ProjectReference Include="..\..\src\SMS.Api\SMS.Api.csproj" />
   </ItemGroup>
 
 </Project>

@@ -35,6 +35,9 @@ else
         });
 }
 builder.Services.AddAuthorization();
+builder.Services.AddSingleton<Microsoft.AspNetCore.Authorization.IAuthorizationPolicyProvider, SMS.Api.Auth.PermissionPolicyProvider>();
+builder.Services.AddScoped<Microsoft.AspNetCore.Authorization.IAuthorizationHandler, SMS.Api.Auth.PermissionHandler>();
+builder.Services.AddScoped<Microsoft.AspNetCore.Authentication.IClaimsTransformation, SMS.Api.Auth.PermissionClaimsTransformation>();
 
 // --- CORS for the React SPA served from the reverse proxy ---
 var spaOrigins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ?? new[] { "http://localhost:5173" };
@@ -63,6 +66,7 @@ if (app.Environment.IsDevelopment())
         await SMS.Infrastructure.Grading.GradeSchemeSeeder.EnsureSeededAsync(db);
         await SMS.Infrastructure.Cases.CaseTypeSeeder.EnsureSeededAsync(db);
         await SMS.Infrastructure.Assistant.KnowledgeSeeder.EnsureSeededAsync(db);
+        await SMS.Infrastructure.Security.RoleSeeder.EnsureSeededAsync(db);
     }
     catch (Exception ex)
     {

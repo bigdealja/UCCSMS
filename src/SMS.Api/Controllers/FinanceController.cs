@@ -45,6 +45,7 @@ public class FinanceController : ControllerBase
     public async Task<ActionResult<Statement>> Statement(int studentId, CancellationToken ct)
         => Ok(await _finance.GetStatementAsync(studentId, ct));
 
+    [SMS.Api.Auth.HasPermission("finance.post")]
     [HttpPost("students/{studentId:int}/charges")]
     public async Task<ActionResult<object>> Charge(int studentId, ChargeDto dto, CancellationToken ct)
     {
@@ -56,6 +57,7 @@ public class FinanceController : ControllerBase
         catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
     }
 
+    [SMS.Api.Auth.HasPermission("finance.post")]
     [HttpPost("students/{studentId:int}/payments")]
     public async Task<ActionResult<object>> Payment(int studentId, PaymentDto dto, CancellationToken ct)
     {

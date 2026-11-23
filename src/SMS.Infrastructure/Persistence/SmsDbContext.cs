@@ -41,6 +41,10 @@ public class SmsDbContext : DbContext
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<KnowledgeArticle> KnowledgeArticles => Set<KnowledgeArticle>();
     public DbSet<AssistantQueryLog> AssistantQueryLogs => Set<AssistantQueryLog>();
+    public DbSet<Role> Roles => Set<Role>();
+    public DbSet<Permission> Permissions => Set<Permission>();
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+    public DbSet<UserRoleAssignment> UserRoleAssignments => Set<UserRoleAssignment>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -111,6 +115,10 @@ public class SmsDbContext : DbContext
         b.Entity<Notification>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<KnowledgeArticle>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<AssistantQueryLog>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<Role>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<Permission>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<RolePermission>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<UserRoleAssignment>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken ct = default)

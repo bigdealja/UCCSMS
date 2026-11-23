@@ -27,6 +27,7 @@ public class GradeGovernanceController : ControllerBase
             r.Status.ToString(), r.ProposedBy, r.DecidedBy)).ToListAsync(ct));
     }
 
+    [SMS.Api.Auth.HasPermission("grades.change.propose")]
     [HttpPost("changes")]
     public async Task<ActionResult<object>> Propose(ProposeGradeChangeDto dto, CancellationToken ct)
     {
@@ -40,6 +41,7 @@ public class GradeGovernanceController : ControllerBase
         catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
     }
 
+    [SMS.Api.Auth.HasPermission("grades.change.approve")]
     [HttpPost("changes/{id:int}/approve")]
     public async Task<ActionResult<object>> Approve(int id, CancellationToken ct)
     {

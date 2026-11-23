@@ -82,6 +82,7 @@ public class AdmissionsController : ControllerBase
     public Task<IActionResult> Review(int id, CancellationToken ct)
         => Act(() => _svc.StartReviewAsync(id, User.Identity?.Name ?? "officer", ct));
 
+    [SMS.Api.Auth.HasPermission("admissions.decide")]
     [HttpPost("applications/{id:int}/decision")]
     public async Task<ActionResult<ApplicationDto>> Decision(int id, DecisionDto dto, CancellationToken ct)
     {
