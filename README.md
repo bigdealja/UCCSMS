@@ -95,7 +95,7 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **1 — Core SIS** ✅ | Students CRUD, Grades + modern Excel/CSV import with mapping, preview & batch undo |
 | **2 — Moodle** ✅ | Course/enrolment provisioning + grade sync + shared SSO |
 | **3 — Examinations** ✅ | Exam scheduling, question banks, exam assembly, result capture, post-to-gradebook (undoable). On-screen exam delivery is a later sub-phase. |
-| **4 — Documents** | Versioned document store (MinIO), PDF/Word generation, student/staff portals |
+| **4 — Documents** ✅ | Versioned document store on MinIO/S3 (filesystem in dev), upload/version/download, per-student + categories. Automated PDF/Word *generation* is a later sub-phase. |
 | **5 — Finance + Sage 300** | Charges, fees, payments, refunds, ACH; Sage AR sync over HTTPS |
 | **6 — Remaining modules + migration** | Timetable, Housing, Health, Sports, Chapel; data migration cutover |
 
@@ -116,6 +116,31 @@ The SMS is the **system of record**; Moodle is kept in step with it.
 Config (never in source): `Moodle:BaseUrl` (https), `Moodle:Token` (a Moodle web-service
 token), `Moodle:StudentRoleId`. Uses Moodle's REST API (`core_course_*`, `core_user_*`,
 `enrol_manual_enrol_users`, `gradereport_user_get_grade_items`).
+
+## Document management (Phase 4)
+
+A versioned document store. Metadata and versions live in SQL Server; the bytes live in
+**object storage** — MinIO/S3 in production, the local filesystem in dev/tests (no MinIO needed
+to run locally). Pluggable via `Storage:Provider` (`FileSystem` | `S3`).
+
+- `GET /api/documents?studentId=&category=` — list (per student and/or category).
+- `POST /api/documents` (multipart) — upload a new document (title, category, optional student).
+- `POST /api/documents/{id}/versions` (multipart) — add a new version (history is kept).
+- `GET /api/documents/{id}/download?version=` — download a version (latest if omitted).
+- `DELETE /api/documents/{id}` — soft-delete.
+
+Each version records size + **SHA-256** for integrity. Categories: Transcript, AdmissionDocument,
+IdDocument, Letter, Certificate, Receipt, Other. Config (secrets via env): `Storage:S3:{Endpoint,
+Bucket,AccessKey,SecretKey}` — for on-prem MinIO, point at its endpoint with path-style addressing.
+
+> Automated generation of PDFs/Word (transcripts, letters — the legacy iTextSharp/DocX feature)
+> is scoped as a follow-on sub-phase.
+
+## Development auth
+
+Every API endpoint is `[Authorize]`. In **Development with no Keycloak configured**, the API
+auto-authenticates requests as a dev user so the UI works out of the box. Production always uses
+real OIDC/JWT bearer tokens from Keycloak.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

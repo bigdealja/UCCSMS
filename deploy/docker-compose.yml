@@ -40,6 +40,12 @@ services:
       Cors__Origins__0: "${PUBLIC_URL}"
       Moodle__BaseUrl: "${MOODLE_URL}"
       Moodle__Token: "${MOODLE_TOKEN}"
+      Storage__Provider: "S3"
+      Storage__S3__Endpoint: "http://storage:9000"
+      Storage__S3__Bucket: "documents"
+      Storage__S3__AccessKey: "${MINIO_ROOT_USER}"
+      Storage__S3__SecretKey: "${MINIO_ROOT_PASSWORD}"
+      Storage__S3__ForcePathStyle: "true"
     depends_on: [ db, auth ]
 
   web:
