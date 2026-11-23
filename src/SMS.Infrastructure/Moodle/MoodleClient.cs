@@ -112,6 +112,34 @@ public class MoodleClient : IMoodleClient
         return list;
     }
 
+
+    public async Task<IReadOnlyList<MoodleUserItems>> GetGradeItemsAsync(long moodleCourseId, CancellationToken ct = default)
+    {
+        var root = await PostAsync("gradereport_user_get_grade_items",
+            new[] { KV("courseid", moodleCourseId.ToString()) }, ct);
+        var list = new List<MoodleUserItems>();
+        if (!root.TryGetProperty("usergrades", out var users)) return list;
+        foreach (var u in users.EnumerateArray())
+        {
+            string idnum = u.TryGetProperty("useridnumber", out var idn) ? (idn.GetString() ?? "") : "";
+            string? email = u.TryGetProperty("useremail", out var em) ? em.GetString() : null;
+            var items = new List<MoodleGradeItem>();
+            if (u.TryGetProperty("gradeitems", out var gi))
+                foreach (var it in gi.EnumerateArray())
+                {
+                    if (it.TryGetProperty("itemtype", out var ty) && ty.GetString() == "course") continue; // course total handled elsewhere
+                    string id = it.TryGetProperty("id", out var iid) ? iid.ToString() : "";
+                    string name = it.TryGetProperty("itemname", out var inm) ? (inm.GetString() ?? "") : "";
+                    double? raw = it.TryGetProperty("graderaw", out var gr) && gr.ValueKind == JsonValueKind.Number ? gr.GetDouble() : null;
+                    double? max = it.TryGetProperty("grademax", out var gm) && gm.ValueKind == JsonValueKind.Number ? gm.GetDouble() : null;
+                    if (!string.IsNullOrEmpty(id)) items.Add(new MoodleGradeItem(id, name, raw, max));
+                }
+            list.Add(new MoodleUserItems(idnum, email, items));
+        }
+        return list;
+    }
+
+
     static KeyValuePair<string, string> KV(string k, string v) => new(k, v);
     static MoodleUser ToUser(JsonElement e) => new(
         e.GetProperty("id").GetInt64(),

@@ -24,6 +24,9 @@ class FakeMoodleClient : IMoodleClient
     { Enrolments.Add((userId, courseId)); return Task.CompletedTask; }
     public Task<IReadOnlyList<MoodleGrade>> GetCourseGradesAsync(long courseId, CancellationToken ct = default)
         => Task.FromResult((IReadOnlyList<MoodleGrade>)GradesToReturn);
+    public List<MoodleUserItems> ItemsToReturn = new();
+    public Task<IReadOnlyList<MoodleUserItems>> GetGradeItemsAsync(long courseId, CancellationToken ct = default)
+        => Task.FromResult((IReadOnlyList<MoodleUserItems>)ItemsToReturn);
 }
 
 public class MoodleSyncTests

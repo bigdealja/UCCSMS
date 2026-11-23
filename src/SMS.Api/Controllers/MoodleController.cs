@@ -14,8 +14,9 @@ public class MoodleController : ControllerBase
     private readonly MoodleSyncService _sync;
     private readonly IMoodleClient _client;
     private readonly MoodleOptions _opt;
-    public MoodleController(MoodleSyncService sync, IMoodleClient client, IOptions<MoodleOptions> opt)
-    { _sync = sync; _client = client; _opt = opt.Value; }
+    private readonly SMS.Infrastructure.Moodle.MoodleGradebookSyncService _gb;
+    public MoodleController(MoodleSyncService sync, IMoodleClient client, IOptions<MoodleOptions> opt, SMS.Infrastructure.Moodle.MoodleGradebookSyncService gb)
+    { _sync = sync; _client = client; _opt = opt.Value; _gb = gb; }
 
     /// <summary>Is Moodle reachable with the configured token?</summary>
     [HttpGet("health")]
@@ -35,4 +36,20 @@ public class MoodleController : ControllerBase
     [HttpPost("pull-grades/{courseId:int}/{termId:int}")]
     public async Task<ActionResult<GradePullResult>> PullGrades(int courseId, int termId, CancellationToken ct)
         => Ok(await _sync.PullGradesAsync(courseId, termId, ct));
+
+    /// <summary>List the linked Moodle course's grade items (id + name) so each can be mapped to a gradebook component.</summary>
+    [HttpGet("grade-items/{courseId:int}")]
+    public async Task<ActionResult<object>> GradeItems(int courseId, CancellationToken ct)
+    {
+        try { return Ok(await _gb.ListItemsAsync(courseId, ct)); }
+        catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+    }
+
+    /// <summary>Pull Moodle activity marks into the gradebook for components mapped to Moodle items.</summary>
+    [HttpPost("sync-gradebook/{courseId:int}/{termId:int}")]
+    public async Task<ActionResult<object>> SyncGradebook(int courseId, int termId, CancellationToken ct)
+    {
+        try { return Ok(await _gb.SyncAsync(courseId, termId, ct)); }
+        catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+    }
 }

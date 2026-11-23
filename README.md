@@ -234,8 +234,12 @@ needed.
   Moodle — the same pipeline as every other grade source.
 - **Import retained as a fallback** — the Grade Import (Excel/CSV with column mapping) remains for
   bulk or exceptional cases; direct entry is the primary path.
-- **Moodle** — components can carry a Moodle grade-item mapping (`MoodleItemId`) so activity marks
-  can be synced in; final grades already sync out via the Moodle module.
+- **Moodle ↔ gradebook sync** — list a linked Moodle course's grade items
+  (`GET /api/moodle/grade-items/{courseId}`), map each to a component
+  (`POST /api/gradebook/components/{id}/map-moodle`), and pull activity marks into the gradebook
+  (`POST /api/moodle/sync-gradebook/{courseId}/{termId}`) — Moodle raw marks are scaled to each
+  component's max mark. So lecturers who mark in Moodle still land in the one gradebook; final grades
+  also sync out via the Moodle module.
 
 API under `/api/gradebook/*` (`components`, `marks`, `sheet`, `compute`, `post`). Entry needs
 `grades.import`; reading needs `grades.read`. A React **Gradebook** page provides the grade sheet.

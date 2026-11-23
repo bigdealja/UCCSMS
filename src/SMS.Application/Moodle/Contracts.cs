@@ -13,6 +13,10 @@ public record MoodleUser(long Id, string Username, string Email, string FirstNam
 public record MoodleCourseRef(long Id, string ShortName, string FullName);
 public record MoodleGrade(string UserIdNumber, string? Email, string? LetterGrade, double? FinalMark);
 
+/// <summary>One activity grade item for a user, pulled from Moodle's gradebook.</summary>
+public record MoodleGradeItem(string ItemId, string ItemName, double? Raw, double? Max);
+public record MoodleUserItems(string UserIdNumber, string? Email, IReadOnlyList<MoodleGradeItem> Items);
+
 /// <summary>Abstraction over Moodle's REST API. Implemented in Infrastructure with HttpClient;
 /// kept as an interface so sync logic and tests don't depend on HTTP or a live Moodle.</summary>
 public interface IMoodleClient
@@ -22,6 +26,8 @@ public interface IMoodleClient
     Task<MoodleCourseRef> EnsureCourseAsync(string shortName, string fullName, CancellationToken ct = default);
     Task EnrolUserAsync(long moodleUserId, long moodleCourseId, int roleId, CancellationToken ct = default);
     Task<IReadOnlyList<MoodleGrade>> GetCourseGradesAsync(long moodleCourseId, CancellationToken ct = default);
+    /// <summary>Per-user, per-activity grade items for a course (for syncing into gradebook components).</summary>
+    Task<IReadOnlyList<MoodleUserItems>> GetGradeItemsAsync(long moodleCourseId, CancellationToken ct = default);
 }
 
 public record ProvisionResult(long MoodleCourseId, int UsersEnrolled, int AlreadyLinked);

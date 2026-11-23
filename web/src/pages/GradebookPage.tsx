@@ -16,6 +16,7 @@ export default function GradebookPage() {
   const [err, setErr] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
+  const [moodleItems, setMoodleItems] = useState<{itemId:string;itemName:string}[] | null>(null)
 
   useEffect(() => { api.get<Lookup[]>('/api/lookups/courses').then(setCourses).catch(() => {}) }, [])
   useEffect(() => { api.get<Lookup[]>('/api/lookups/terms').then(setTerms).catch(() => {}) }, [])
@@ -32,6 +33,9 @@ export default function GradebookPage() {
     go(() => api.post('/api/gradebook/marks', { componentId, studentId, mark }))
   }
   const post = () => go(() => api.post<any>('/api/gradebook/post', { courseId, termId }).then(r => setMsg(`Posted ${r.written} grade(s) to the record (batch ${r.batchId}). Skipped ${r.skipped}.`)))
+  const loadMoodleItems = () => { setErr(null); api.get<any[]>(`/api/moodle/grade-items/${courseId}`).then(setMoodleItems).catch(e => setErr(e.message)) }
+  const mapMoodle = (componentId: number) => { const iid = prompt('Moodle grade item id to map to this component?'); if (iid) go(() => api.post(`/api/gradebook/components/${componentId}/map-moodle`, { moodleItemId: iid })) }
+  const syncMoodle = () => go(() => api.post<any>(`/api/moodle/sync-gradebook/${courseId}/${termId}`, {}).then(r => setMsg(`Synced ${r.marksWritten} mark(s) from Moodle for ${r.mappedComponents} mapped component(s). Unmatched: ${r.unmatched}.`)))
 
   const ready = courseId > 0 && termId > 0
   return (
@@ -63,6 +67,18 @@ export default function GradebookPage() {
             <label>Max mark <input type="number" value={comp.maxMark} onChange={e => setComp({ ...comp, maxMark: +e.target.value })} style={{ width: 90 }} /></label>
             <button disabled={!comp.name || comp.weight <= 0} onClick={addComp} style={{ alignSelf: 'flex-end' }}>+ Component</button>
           </div>
+          {sheet && sheet.components.length > 0 && (
+            <table className="grid" style={{ marginTop: 12 }}>
+              <thead><tr><th>Component</th><th>Category</th><th>Weight</th><th>Max</th><th>Moodle</th></tr></thead>
+              <tbody>{sheet.components.map(c => (<tr key={c.id}>
+                <td>{c.name}</td><td>{c.category}</td><td>{c.weight}%</td><td>{c.maxMark}</td>
+                <td><button className="link" onClick={() => mapMoodle(c.id)}>Map to Moodle item</button></td></tr>))}</tbody>
+            </table>)}
+          <div className="row" style={{ marginTop: 10 }}>
+            <button className="secondary" onClick={loadMoodleItems}>Load Moodle items</button>
+            <button className="secondary" onClick={syncMoodle}>Sync marks from Moodle</button>
+          </div>
+          {moodleItems && <p className="muted-text">Moodle items: {moodleItems.map(i => `${i.itemId}:${i.itemName}`).join(' · ') || '(none / course not linked)'}</p>}
         </div>
 
         <div className="card">

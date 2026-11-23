@@ -55,6 +55,7 @@ public static class DependencyInjection
         services.Configure<MoodleOptions>(config.GetSection("Moodle"));
         services.AddHttpClient<IMoodleClient, MoodleClient>();
         services.AddScoped<MoodleSyncService>();
+        services.AddScoped<MoodleGradebookSyncService>();
         services.AddScoped<ExamService>();
         services.AddScoped<ExamSchedulingService>();
 

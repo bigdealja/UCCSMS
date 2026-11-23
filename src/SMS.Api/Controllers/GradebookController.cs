@@ -38,6 +38,17 @@ public class GradebookController : ControllerBase
         catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
     }
 
+    public record MapMoodleBody(string MoodleItemId);
+    [HttpPost("components/{id:int}/map-moodle")]
+    [HasPermission("grades.import")]
+    public async Task<IActionResult> MapMoodle(int id, MapMoodleBody b, CancellationToken ct)
+    {
+        var c = await _db.AssessmentComponents.FirstOrDefaultAsync(x => x.Id == id, ct);
+        if (c is null) return NotFound();
+        c.MoodleItemId = b.MoodleItemId; await _db.SaveChangesAsync(ct);
+        return NoContent();
+    }
+
     public record MarkBody(int ComponentId, int StudentId, double Mark);
     [HttpPost("marks")]
     [HasPermission("grades.import")]
