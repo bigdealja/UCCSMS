@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom'
 import StudentsPage from './pages/StudentsPage'
 import AdmissionsPage from './pages/AdmissionsPage'
+import DashboardPage from './pages/DashboardPage'
 import StudentForm from './pages/StudentForm'
 import GradeImportPage from './pages/GradeImportPage'
 import MoodlePage from './pages/MoodlePage'
@@ -36,7 +37,7 @@ function Shell() {
       </aside>
       <main className="content">
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<DashboardPage />} />
           <Route path="/admissions" element={<AdmissionsPage />} />
           <Route path="/students" element={<StudentsPage />} />
           <Route path="/students/new" element={<StudentForm />} />
@@ -55,19 +56,6 @@ function Shell() {
   )
 }
 
-function Dashboard() {
-  return (
-    <div>
-      <h2>Dashboard</h2>
-      <p>Web-based Student Management System — Phase 1.</p>
-      <ul>
-        <li><Link to="/students">Students</Link> — full CRUD, paged &amp; searchable.</li>
-        <li><Link to="/grade-import">Grade Import</Link> — Excel/CSV with column mapping, preview &amp; batch undo.</li>
-        <li>Registration, Examinations, Documents and Moodle sync arrive in later phases.</li>
-      </ul>
-    </div>
-  )
-}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode><BrowserRouter><Shell /></BrowserRouter></React.StrictMode>

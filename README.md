@@ -102,7 +102,8 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **7 — Exam expansion** ✅ | Rooms/venues, capacity-checked room allocation, invigilator assignment, special arrangements, automatic clash detection |
 | **8 — Case management** ✅ | 14 configurable case types, working-day due dates, second-person approval, overdue/due-soon, dashboard, append-only history |
 | **9 — AI assistant layer** ✅ (admissions) | `IAiAssistant` (pluggable, off by default); AI recommends an admission category + flags missing docs, a human approves. Staff/student Q&A assistant is the next AI increment. |
-| **10 — Governance & integrations** | Grade governance, external examiners, scripts/custody, HR provider, notifications/KPIs |
+| **10 — Notifications & KPIs** ✅ | Inbox + rule-based alerts (overdue cases, exam clashes), executive KPI dashboard across modules |
+| **10b — Governance & integrations** | Grade governance, external examiners, scripts/custody, HR provider |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
@@ -254,6 +255,20 @@ remark, etc. is a tracked case.
 
 API under `/api/cases/*` (types, dashboard, list, create, notes, assign, approve, resolve, cancel,
 link). A React **Cases** page with the dashboard, intake form and work list.
+
+## Notifications & dashboard (Phase 10)
+
+The glue that surfaces work across modules — the EMS principle that alerts and reports are worked
+out from records, not typed in.
+
+- **Notifications inbox** (personal + broadcast), with read/unread.
+- **Rule-based alert generation** — `POST /api/notifications/run-alerts` scans for overdue open
+  cases and exam clashes in active terms and files inbox alerts. It **dedupes** against unread
+  alerts for the same record, so it is safe to run on a schedule (a background job in production).
+- **Executive KPI dashboard** — `GET /api/metrics/overview`: students by status, admissions funnel
+  (leads, applications, enrolled, conversion rate), open/overdue cases, exams scheduled + clashes,
+  and the finance ledger balance — all computed live from records.
+- The React home page shows the KPI tiles and the notifications panel.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

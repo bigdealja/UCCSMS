@@ -37,6 +37,7 @@ public class SmsDbContext : DbContext
     public DbSet<CaseType> CaseTypes => Set<CaseType>();
     public DbSet<Case> Cases => Set<Case>();
     public DbSet<CaseAction> CaseActions => Set<CaseAction>();
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -102,6 +103,7 @@ public class SmsDbContext : DbContext
         b.Entity<CaseType>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<Case>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<CaseAction>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<Notification>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken ct = default)
