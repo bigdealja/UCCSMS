@@ -15,6 +15,7 @@ import ExamSchedulingPage from './pages/ExamSchedulingPage'
 import ExaminersPage from './pages/ExaminersPage'
 import QuestionPapersPage from './pages/QuestionPapersPage'
 import ScriptsPage from './pages/ScriptsPage'
+import AssessmentOpsPage from './pages/AssessmentOpsPage'
 import CasesPage from './pages/CasesPage'
 import DocumentsPage from './pages/DocumentsPage'
 import FinancePage from './pages/FinancePage'
@@ -38,6 +39,7 @@ function Shell() {
           <NavLink to="/examiners">External Examiners</NavLink>
           <NavLink to="/question-papers">Question Papers</NavLink>
           <NavLink to="/scripts">Scripts &amp; Custody</NavLink>
+          <NavLink to="/assessment-ops">Assessment Ops</NavLink>
           <NavLink to="/grading">Grade Schemes</NavLink>
           <NavLink to="/grade-governance">Grade Governance</NavLink>
           <NavLink to="/assistant">Assistant</NavLink>
@@ -63,6 +65,7 @@ function Shell() {
           <Route path="/examiners" element={<ExaminersPage />} />
           <Route path="/question-papers" element={<QuestionPapersPage />} />
           <Route path="/scripts" element={<ScriptsPage />} />
+          <Route path="/assessment-ops" element={<AssessmentOpsPage />} />
           <Route path="/grading" element={<GradingPage />} />
           <Route path="/grade-governance" element={<GradeGovernancePage />} />
           <Route path="/assistant" element={<AssistantPage />} />

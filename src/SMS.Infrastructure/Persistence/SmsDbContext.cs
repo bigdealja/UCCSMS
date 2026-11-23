@@ -57,6 +57,7 @@ public class SmsDbContext : DbContext
     public DbSet<CustodyEvent> CustodyEvents => Set<CustodyEvent>();
     public DbSet<ScanBatch> ScanBatches => Set<ScanBatch>();
     public DbSet<MarkedScriptUpload> MarkedScriptUploads => Set<MarkedScriptUpload>();
+    public DbSet<SittingRecord> SittingRecords => Set<SittingRecord>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -142,6 +143,7 @@ public class SmsDbContext : DbContext
         b.Entity<CustodyEvent>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<ScanBatch>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<MarkedScriptUpload>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<SittingRecord>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken ct = default)

@@ -116,7 +116,8 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **External examiners** ✅ | Register, conflict declarations (gating appointment), 11-stage assignment/package workflow, reports + action plans, time-limited examiner portal |
 | **Question papers** ✅ | Expected-paper register, versions, vetting + external-review gate, approval/release, secure print runs, dispatch, return & witnessed destruction, emergency withdrawal |
 | **Scripts & custody** ✅ | Script bundles with full chain of custody, scanning, issue-to-marker, marked uploads, retention + witnessed disposal |
-| **10b — Remaining modules** | HR provider, assessment-operations register, advisement/graduation |
+| **Assessment operations register** ✅ | One record per sitting; milestones drive auto stage + status (ready/at-risk/overdue/blocked/complete) + needs-attention view |
+| **10b — Remaining modules** | HR provider, advisement/graduation, legacy student services |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
@@ -424,6 +425,22 @@ Post-exam chain of custody from the EMS brief (the counterpart to question paper
 Management API under `/api/scripts/*` (permission `scripts.manage`: Examination Officer, Registrar,
 Admin), including `GET /api/scripts/{id}/chain` for the custody trail. A React **Scripts & Custody**
 page drives it.
+
+## Assessment operations register
+
+The operational heartbeat from the EMS brief — "where is every sitting":
+
+- **One record per exam sitting** with a due date and ordered milestones: ScriptsCollected → Marked
+  → GradeSheetReturned → Entered → SentToDean → Vetted → Published. Milestones are **sequential**
+  (the prior one must be complete).
+- **Stage and status are computed, not typed** — stage is the furthest milestone; status is
+  **Complete** (published), **Overdue** (past due, unpublished), **AtRisk** (due within 3 days),
+  **Blocked** (an exception is on file), or **InProgress / NotStarted**.
+- **Needs-attention** view lists overdue, at-risk and blocked sittings; exceptions and late reasons
+  are captured per sitting.
+
+API under `/api/assessmentops/*` (permission `exams.manage`). A React **Assessment Ops** page shows
+the register with a needs-attention filter.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

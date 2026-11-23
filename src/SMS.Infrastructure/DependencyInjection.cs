@@ -25,6 +25,7 @@ using SMS.Infrastructure.Audit;
 using SMS.Infrastructure.Examiners;
 using SMS.Infrastructure.QuestionPapers;
 using SMS.Infrastructure.Scripts;
+using SMS.Infrastructure.AssessmentOps;
 using SMS.Application.Ai;
 using SMS.Infrastructure.Ai;
 using SMS.Infrastructure.Persistence;
@@ -105,6 +106,7 @@ public static class DependencyInjection
         services.AddScoped<ExaminerService>();
         services.AddScoped<QuestionPaperService>();
         services.AddScoped<ScriptCustodyService>();
+        services.AddScoped<AssessmentOpsService>();
         return services;
     }
 }
