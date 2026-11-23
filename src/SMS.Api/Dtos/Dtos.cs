@@ -71,3 +71,5 @@ public record AuditEventDto(int Id, string Timestamp, string Actor, string Actio
 public record ExaminerDto(int Id, string FirstName, string LastName, string? Email, string? Institution, string Status, bool ConflictDeclarationRecorded, bool HasConflict);
 public record UpsertExaminerDto(string FirstName, string LastName, string? Email, string? Institution);
 public record AssignmentDto(int Id, int ExaminerId, int? ProgrammeId, int? TermId, string Stage);
+
+public record PaperDto(int Id, string Title, int CourseId, int TermId, string Status, string SubmissionDeadline, string? AuthorLecturer, bool ExternalReviewRequired, int CurrentVersion, bool Overdue, bool AtRisk);

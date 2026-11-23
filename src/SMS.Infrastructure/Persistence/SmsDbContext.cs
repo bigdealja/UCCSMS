@@ -50,6 +50,9 @@ public class SmsDbContext : DbContext
     public DbSet<ExaminerAssignment> ExaminerAssignments => Set<ExaminerAssignment>();
     public DbSet<ExaminerReport> ExaminerReports => Set<ExaminerReport>();
     public DbSet<ExaminerPortalToken> ExaminerPortalTokens => Set<ExaminerPortalToken>();
+    public DbSet<QuestionPaper> QuestionPapers => Set<QuestionPaper>();
+    public DbSet<QuestionPaperVersion> QuestionPaperVersions => Set<QuestionPaperVersion>();
+    public DbSet<PrintRun> PrintRuns => Set<PrintRun>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -128,6 +131,9 @@ public class SmsDbContext : DbContext
         b.Entity<ExaminerAssignment>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<ExaminerReport>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<ExaminerPortalToken>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<QuestionPaper>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<QuestionPaperVersion>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<PrintRun>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken ct = default)

@@ -1711,6 +1711,63 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.ToTable("Permissions");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.PrintRun", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Copies")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("DestroyedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DestructionWitness")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DispatchedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("QuestionPaperId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReturnedUnused")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SecureStorageRef")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SpareCopies")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionPaperId");
+
+                    b.ToTable("PrintRuns");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.Programme", b =>
                 {
                     b.Property<int>("Id")
@@ -1808,6 +1865,118 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.QuestionPaper", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AuthorLecturer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("CurrentVersion")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ExternalReviewRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset?>("ReturnedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<DateOnly>("SubmissionDeadline")
+                        .HasColumnType("date");
+
+                    b.Property<int>("TermId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WithdrawnReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("TermId");
+
+                    b.ToTable("QuestionPapers");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.QuestionPaperVersion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("DocumentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("QuestionPaperId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubmittedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionPaperId");
+
+                    b.ToTable("QuestionPaperVersions");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.Role", b =>
@@ -2565,6 +2734,17 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Navigation("ProgrammeOfInterest");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.PrintRun", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.QuestionPaper", "QuestionPaper")
+                        .WithMany("PrintRuns")
+                        .HasForeignKey("QuestionPaperId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("QuestionPaper");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.Programme", b =>
                 {
                     b.HasOne("SMS.Domain.Entities.School", "School")
@@ -2585,6 +2765,36 @@ namespace SMS.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.QuestionPaper", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SMS.Domain.Entities.Term", "Term")
+                        .WithMany()
+                        .HasForeignKey("TermId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Term");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.QuestionPaperVersion", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.QuestionPaper", "QuestionPaper")
+                        .WithMany("Versions")
+                        .HasForeignKey("QuestionPaperId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("QuestionPaper");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.RolePermission", b =>
@@ -2695,6 +2905,13 @@ namespace SMS.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("SMS.Domain.Entities.Programme", b =>
                 {
                     b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.QuestionPaper", b =>
+                {
+                    b.Navigation("PrintRuns");
+
+                    b.Navigation("Versions");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.Role", b =>

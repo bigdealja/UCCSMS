@@ -23,6 +23,7 @@ using SMS.Infrastructure.Pdf;
 using SMS.Infrastructure.Security;
 using SMS.Infrastructure.Audit;
 using SMS.Infrastructure.Examiners;
+using SMS.Infrastructure.QuestionPapers;
 using SMS.Application.Ai;
 using SMS.Infrastructure.Ai;
 using SMS.Infrastructure.Persistence;
@@ -101,6 +102,7 @@ public static class DependencyInjection
         services.AddScoped<PdfService>();
         services.AddScoped<PermissionResolver>();
         services.AddScoped<ExaminerService>();
+        services.AddScoped<QuestionPaperService>();
         return services;
     }
 }

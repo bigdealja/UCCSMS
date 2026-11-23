@@ -114,7 +114,8 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **10 — Notifications & KPIs** ✅ | Inbox + rule-based alerts (overdue cases, exam clashes), executive KPI dashboard across modules |
 | **Grade governance** ✅ | Grade-change register (reason codes, original preserved, second-person approval), withheld grades, pre-publication reconciliation |
 | **External examiners** ✅ | Register, conflict declarations (gating appointment), 11-stage assignment/package workflow, reports + action plans, time-limited examiner portal |
-| **10b — Remaining modules** | Scripts/custody, question papers, HR provider, assessment-operations register |
+| **Question papers** ✅ | Expected-paper register, versions, vetting + external-review gate, approval/release, secure print runs, dispatch, return & witnessed destruction, emergency withdrawal |
+| **10b — Remaining modules** | Scripts/custody, HR provider, assessment-operations register |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
@@ -387,6 +388,24 @@ Covers the external-examiner lifecycle from the EMS brief:
 
 Management API under `/api/examiners/*` (permission `examiners.manage`: Registrar, Examination
 Officer, Dean, Admin). A React **External Examiners** page drives it.
+
+## Question-paper lifecycle
+
+Secure management of exam papers from the EMS brief:
+
+- **Register of expected papers** per course sitting with a submission deadline; **overdue** and
+  **at-risk** are computed from the deadline.
+- **Versioned submission** (links to the stored file); a submission moves a paper from Expected to
+  Submitted.
+- **Workflow with gates** (forward-only): Submitted → UnderVetting → *ExternalReview* → Approved →
+  Released. **Approval is blocked until external review** when the paper requires it.
+- **Secure print runs** — copies + spares, storage reference; printing is blocked until Released.
+- **Dispatch**, then **return of unused copies** and **witnessed destruction** (destruction is
+  blocked until the return is recorded).
+- **Emergency withdrawal** at any stage, with a reason.
+
+Management API under `/api/questionpapers/*` (permission `papers.manage`: Examination Officer,
+Registrar, Admin). A React **Question Papers** page drives the lifecycle.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,
