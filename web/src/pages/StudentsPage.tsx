@@ -46,6 +46,7 @@ export default function StudentsPage() {
               <td>{s.status}</td>
               <td className="actions">
                 <Link to={`/students/${s.id}/edit`}>Edit</Link>
+                <a href={`/api/pdf/transcript/${s.id}`} target="_blank" rel="noreferrer">Transcript</a>
                 <button className="link danger" onClick={() => remove(s.id, `${s.firstName} ${s.lastName}`)}>Delete</button>
               </td>
             </tr>

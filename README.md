@@ -309,6 +309,21 @@ Controls on changing and publishing grades, from both policy documents:
 API under `/api/gradegovernance/*`. A React **Grade Governance** page manages the register and
 runs the pre-publication check.
 
+## PDF generation
+
+Official documents are generated from data already in the system (QuestPDF):
+
+- **Transcript** — `GET /api/pdf/transcript/{studentId}`: student details, a table of courses
+  (code, title, term, credits, grade) and the cumulative GPA from the grade engine.
+- **Acceptance letter** — `GET /api/pdf/acceptance-letter/{applicationId}`: a templated offer
+  letter naming the programme, intake term and admission category, with the application reference.
+
+Linked from the Students list (Transcript) and the Admissions page (Letter, for accepted
+applications). More templates (certificates, enrolment letters) plug into the same `PdfService`.
+
+> **Licensing:** QuestPDF is used under its free **Community** licence (set in code). Institutions
+> above QuestPDF's revenue threshold must obtain a QuestPDF **Professional** licence.
+
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,
 `SMS_Apply`, `NCUChapel`. The reverse-engineered table and stored-procedure names give a

@@ -84,6 +84,7 @@ export default function AdmissionsPage() {
                 {a.status === 'UnderReview' && <button className="link" onClick={() => decide(a.id)}>Decide</button>}
                 {a.status === 'Accepted' && a.offerResponse === 'Pending' && <button className="link" onClick={() => respond(a.id, 'Accepted')}>Offer: Accept</button>}
                 {a.status === 'Accepted' && !a.studentId && <button className="link" onClick={() => toStudent(a.id)}>→ Student</button>}
+                {a.status === 'Accepted' && <a href={`/api/pdf/acceptance-letter/${a.id}`} target="_blank" rel="noreferrer">Letter</a>}
                 {a.studentId && <span className="ok">Student #{a.studentId}</span>}
               </td>
             </tr>))}
