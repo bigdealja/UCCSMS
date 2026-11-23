@@ -115,7 +115,8 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **Grade governance** ✅ | Grade-change register (reason codes, original preserved, second-person approval), withheld grades, pre-publication reconciliation |
 | **External examiners** ✅ | Register, conflict declarations (gating appointment), 11-stage assignment/package workflow, reports + action plans, time-limited examiner portal |
 | **Question papers** ✅ | Expected-paper register, versions, vetting + external-review gate, approval/release, secure print runs, dispatch, return & witnessed destruction, emergency withdrawal |
-| **10b — Remaining modules** | Scripts/custody, HR provider, assessment-operations register |
+| **Scripts & custody** ✅ | Script bundles with full chain of custody, scanning, issue-to-marker, marked uploads, retention + witnessed disposal |
+| **10b — Remaining modules** | HR provider, assessment-operations register, advisement/graduation |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
@@ -406,6 +407,23 @@ Secure management of exam papers from the EMS brief:
 
 Management API under `/api/questionpapers/*` (permission `papers.manage`: Examination Officer,
 Registrar, Admin). A React **Question Papers** page drives the lifecycle.
+
+## Scripts & custody
+
+Post-exam chain of custody from the EMS brief (the counterpart to question papers):
+
+- **Script bundles** created from an exam, with a script count and a current custodian; creation
+  logs a 'Collected' custody event.
+- **Chain of custody** — every handover, scan, issue-to-marker, marked upload, return, retention and
+  disposal appends an append-only `CustodyEvent` (from → to custodian, by whom, notes).
+- **Scanning** records a scan batch (shared collection reference for lecturers) and advances status.
+- **Issue to markers** and **marked-script uploads** (links to the Documents store).
+- **Retention + witnessed disposal** — a retention date is set; **disposal is blocked until the
+  retention date has passed** and requires a named witness.
+
+Management API under `/api/scripts/*` (permission `scripts.manage`: Examination Officer, Registrar,
+Admin), including `GET /api/scripts/{id}/chain` for the custody trail. A React **Scripts & Custody**
+page drives it.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

@@ -586,6 +586,54 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.CustodyEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Action")
+                        .HasColumnType("int");
+
+                    b.Property<string>("By")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("FromCustodian")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ScriptBundleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ToCustodian")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScriptBundleId");
+
+                    b.ToTable("CustodyEvents");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.Document", b =>
                 {
                     b.Property<int>("Id")
@@ -1619,6 +1667,49 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.ToTable("Leads");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.MarkedScriptUpload", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int?>("DocumentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("ScriptBundleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UploadedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScriptBundleId");
+
+                    b.ToTable("MarkedScriptUploads");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.Notification", b =>
                 {
                     b.Property<int>("Id")
@@ -2102,6 +2193,48 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.ToTable("Rooms");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.ScanBatch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CollectionRef")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ScannedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ScannedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ScriptBundleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScriptBundleId");
+
+                    b.ToTable("ScanBatches");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.School", b =>
                 {
                     b.Property<int>("Id")
@@ -2144,6 +2277,61 @@ namespace SMS.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Schools");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ScriptBundle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Custodian")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisposalWitness")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("DisposedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateOnly?>("RetentionUntil")
+                        .HasColumnType("date");
+
+                    b.Property<int>("ScriptCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
+
+                    b.ToTable("ScriptBundles");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.SpecialArrangement", b =>
@@ -2487,6 +2675,17 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Navigation("Programme");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.CustodyEvent", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.ScriptBundle", "ScriptBundle")
+                        .WithMany("CustodyEvents")
+                        .HasForeignKey("ScriptBundleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ScriptBundle");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.Document", b =>
                 {
                     b.HasOne("SMS.Domain.Entities.Student", "Student")
@@ -2734,6 +2933,17 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Navigation("ProgrammeOfInterest");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.MarkedScriptUpload", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.ScriptBundle", "ScriptBundle")
+                        .WithMany()
+                        .HasForeignKey("ScriptBundleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ScriptBundle");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.PrintRun", b =>
                 {
                     b.HasOne("SMS.Domain.Entities.QuestionPaper", "QuestionPaper")
@@ -2827,6 +3037,17 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Navigation("Campus");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.ScanBatch", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.ScriptBundle", "ScriptBundle")
+                        .WithMany()
+                        .HasForeignKey("ScriptBundleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ScriptBundle");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.School", b =>
                 {
                     b.HasOne("SMS.Domain.Entities.Campus", "Campus")
@@ -2836,6 +3057,17 @@ namespace SMS.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Campus");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ScriptBundle", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.Exam", "Exam")
+                        .WithMany()
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.SpecialArrangement", b =>
@@ -2922,6 +3154,11 @@ namespace SMS.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("SMS.Domain.Entities.School", b =>
                 {
                     b.Navigation("Programmes");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.ScriptBundle", b =>
+                {
+                    b.Navigation("CustodyEvents");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.Student", b =>
