@@ -9,4 +9,7 @@ public class Course : BaseEntity
     public int Credits { get; set; }
     public int ProgrammeId { get; set; }
     public Programme Programme { get; set; } = default!;
+
+    /// <summary>Linked Moodle course id, set when provisioned to Moodle.</summary>
+    public long? MoodleCourseId { get; set; }
 }

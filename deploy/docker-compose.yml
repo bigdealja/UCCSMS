@@ -38,6 +38,8 @@ services:
       Auth__Authority: "${AUTH_AUTHORITY}"
       Auth__Audience: "sms-api"
       Cors__Origins__0: "${PUBLIC_URL}"
+      Moodle__BaseUrl: "${MOODLE_URL}"
+      Moodle__Token: "${MOODLE_TOKEN}"
     depends_on: [ db, auth ]
 
   web:

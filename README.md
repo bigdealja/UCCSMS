@@ -91,13 +91,31 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 
 | Phase | Scope |
 |---|---|
-| **0 — Foundation** (this repo) | Solution, auth, core model, API + SPA, deployment |
-| **1 — Core SIS** | Students CRUD, Registration (add/drop, prerequisites), Grades + modern import |
-| **2 — Moodle** | Course/enrolment provisioning + grade sync + shared SSO |
+| **0 — Foundation** | Solution, auth, core model, API + SPA, deployment |
+| **1 — Core SIS** ✅ | Students CRUD, Grades + modern Excel/CSV import with mapping, preview & batch undo |
+| **2 — Moodle** ✅ | Course/enrolment provisioning + grade sync + shared SSO |
 | **3 — Examinations** | Exam scheduling, question banks, on-screen exams, grade capture |
 | **4 — Documents** | Versioned document store (MinIO), PDF/Word generation, student/staff portals |
 | **5 — Finance + Sage 300** | Charges, fees, payments, refunds, ACH; Sage AR sync over HTTPS |
 | **6 — Remaining modules + migration** | Timetable, Housing, Health, Sports, Chapel; data migration cutover |
+
+## Moodle integration (Phase 2)
+
+The SMS is the **system of record**; Moodle is kept in step with it.
+
+- **Provision (SMS → Moodle)** — `POST /api/moodle/provision/{courseId}/{termId}` creates the
+  Moodle course (if needed), ensures each registered student exists as a Moodle user, and
+  enrols them. Moodle ids are stored back on `Student.MoodleUserId` / `Course.MoodleCourseId`.
+- **Grade sync (Moodle → SMS)** — `POST /api/moodle/pull-grades/{courseId}/{termId}` pulls
+  course grades and writes them to enrolments as **one undoable batch** (same `ImportBatchId`
+  mechanism as the file import, so `undo-batch` reverses a Moodle sync too).
+- **Connection check** — `GET /api/moodle/health`.
+- **SSO** — Moodle users are created with `auth = oidc`; point Moodle's OIDC plugin at the
+  same Keycloak realm as the API so one login spans both systems.
+
+Config (never in source): `Moodle:BaseUrl` (https), `Moodle:Token` (a Moodle web-service
+token), `Moodle:StudentRoleId`. Uses Moodle's REST API (`core_course_*`, `core_user_*`,
+`enrol_manual_enrol_users`, `gradereport_user_get_grade_items`).
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

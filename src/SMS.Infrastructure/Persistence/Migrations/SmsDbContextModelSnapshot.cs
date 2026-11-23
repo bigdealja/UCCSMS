@@ -94,6 +94,9 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("ModifiedUtc")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<long?>("MoodleCourseId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("ProgrammeId")
                         .HasColumnType("int");
 
@@ -353,6 +356,9 @@ namespace SMS.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTimeOffset?>("ModifiedUtc")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<long?>("MoodleUserId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("ProgrammeId")
                         .HasColumnType("int");

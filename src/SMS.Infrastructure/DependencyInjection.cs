@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SMS.Application.GradeImport;
+using SMS.Application.Moodle;
 using SMS.Infrastructure.GradeImport;
+using SMS.Infrastructure.Moodle;
 using SMS.Infrastructure.Persistence;
 
 namespace SMS.Infrastructure;
@@ -19,6 +21,11 @@ public static class DependencyInjection
 
         services.AddScoped<IGradeFileParser, SpreadsheetGradeFileParser>();
         services.AddScoped<GradeImportService>();
+
+        // Moodle integration
+        services.Configure<MoodleOptions>(config.GetSection("Moodle"));
+        services.AddHttpClient<IMoodleClient, MoodleClient>();
+        services.AddScoped<MoodleSyncService>();
         return services;
     }
 }

@@ -17,5 +17,8 @@ public class Student : BaseEntity
     public int ProgrammeId { get; set; }
     public Programme Programme { get; set; } = default!;
 
+    /// <summary>Linked Moodle user id, set when the student is provisioned to Moodle.</summary>
+    public long? MoodleUserId { get; set; }
+
     public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
 }

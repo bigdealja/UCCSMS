@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom'
 import StudentsPage from './pages/StudentsPage'
 import StudentForm from './pages/StudentForm'
 import GradeImportPage from './pages/GradeImportPage'
+import MoodlePage from './pages/MoodlePage'
 import './index.css'
 
 function Shell() {
@@ -18,7 +19,7 @@ function Shell() {
           <a className="muted" title="Coming soon">Registration</a>
           <a className="muted" title="Coming soon">Examinations</a>
           <a className="muted" title="Coming soon">Documents</a>
-          <a className="muted" title="Coming soon">Moodle Sync</a>
+          <NavLink to="/moodle">Moodle Sync</NavLink>
         </nav>
       </aside>
       <main className="content">
@@ -28,6 +29,7 @@ function Shell() {
           <Route path="/students/new" element={<StudentForm />} />
           <Route path="/students/:id/edit" element={<StudentForm />} />
           <Route path="/grade-import" element={<GradeImportPage />} />
+          <Route path="/moodle" element={<MoodlePage />} />
         </Routes>
       </main>
     </div>
