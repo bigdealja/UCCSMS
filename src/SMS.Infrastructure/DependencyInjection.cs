@@ -31,10 +31,12 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
     {
         // Connection string comes from env/secret file (SMS_DB), NEVER from source.
-        var cs = config.GetConnectionString("Sms")
-                 ?? Environment.GetEnvironmentVariable("SMS_DB")
-                 ?? throw new InvalidOperationException("No SMS database connection string configured.");
-        services.AddDbContext<SmsDbContext>(o => o.UseSqlServer(cs));
+        var cs = config.GetConnectionString("Sms") ?? Environment.GetEnvironmentVariable("SMS_DB");
+        if (!string.IsNullOrWhiteSpace(cs))
+            services.AddDbContext<SmsDbContext>(o => o.UseSqlServer(cs));
+        else
+            // Demo / no-DB mode: run entirely in memory (used for previews and local demos).
+            services.AddDbContext<SmsDbContext>(o => o.UseInMemoryDatabase("sms-demo"));
 
         services.AddScoped<IGradeFileParser, SpreadsheetGradeFileParser>();
         services.AddScoped<GradeImportService>();

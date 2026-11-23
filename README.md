@@ -60,6 +60,15 @@ internet-facing entry point.
 
 ## Run it
 
+### Run without a database (demo/preview)
+
+With no SQL Server connection string set, the API runs on an in-memory database and seeds demo
+data — handy for a quick look:
+```bash
+cd src/SMS.Api && ConnectionStrings__Sms= ASPNETCORE_ENVIRONMENT=Development dotnet run   # http://localhost:5080
+cd web && npm install && npm run dev                                                      # http://localhost:5173
+```
+
 ### Local development (two terminals)
 ```bash
 # 1) API  (needs a SQL Server; see appsettings.Development.json or set SMS_DB)

@@ -67,6 +67,15 @@ if (app.Environment.IsDevelopment())
         await SMS.Infrastructure.Cases.CaseTypeSeeder.EnsureSeededAsync(db);
         await SMS.Infrastructure.Assistant.KnowledgeSeeder.EnsureSeededAsync(db);
         await SMS.Infrastructure.Security.RoleSeeder.EnsureSeededAsync(db);
+        // a demo case so the Cases board isn't empty
+        if (!await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.AnyAsync(db.Cases))
+        {
+            var ct0 = await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.FirstAsync(db.CaseTypes);
+            db.Cases.Add(new SMS.Domain.Entities.Case { CaseNumber = ct0.Code + "-2026-0001", CaseTypeId = ct0.Id,
+                Title = "Student query about grade", AssignedTo = "officer.jane",
+                DueUtc = DateTimeOffset.UtcNow.AddDays(-1), Status = SMS.Domain.Enums.CaseStatus.Open });
+            await db.SaveChangesAsync();
+        }
     }
     catch (Exception ex)
     {
