@@ -15,6 +15,8 @@ using SMS.Infrastructure.Grading;
 using SMS.Application.Crm;
 using SMS.Infrastructure.Crm;
 using SMS.Infrastructure.Admissions;
+using SMS.Application.Ai;
+using SMS.Infrastructure.Ai;
 using SMS.Infrastructure.Persistence;
 
 namespace SMS.Infrastructure;
@@ -66,6 +68,15 @@ public static class DependencyInjection
         else
             services.AddScoped<ICrmProvider, BuiltInCrmProvider>();
         services.AddScoped<AdmissionsService>();
+
+        // AI is pluggable and OFF by default (data-protection approval required to enable).
+        services.Configure<AiOptions>(config.GetSection("Ai"));
+        var aiProvider = config.GetSection("Ai")["Provider"] ?? "None";
+        if (string.Equals(aiProvider, "OpenAiCompatible", StringComparison.OrdinalIgnoreCase))
+            services.AddHttpClient<IAiAssistant, ChatCompletionAiAssistant>();
+        else
+            services.AddScoped<IAiAssistant, NullAiAssistant>();
+        services.AddScoped<AdmissionsAiService>();
         return services;
     }
 }

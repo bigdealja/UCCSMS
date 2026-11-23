@@ -6,6 +6,7 @@ using SMS.Application.Crm;
 using SMS.Domain.Entities;
 using SMS.Domain.Enums;
 using SMS.Infrastructure.Admissions;
+using SMS.Application.Ai;
 using SMS.Infrastructure.Persistence;
 
 namespace SMS.Api.Controllers;
@@ -18,7 +19,10 @@ public class AdmissionsController : ControllerBase
     private readonly SmsDbContext _db;
     private readonly AdmissionsService _svc;
     private readonly ICrmProvider _crm;
-    public AdmissionsController(SmsDbContext db, AdmissionsService svc, ICrmProvider crm) { _db = db; _svc = svc; _crm = crm; }
+    private readonly AdmissionsAiService _ai;
+    private readonly IAiAssistant _aiAssistant;
+    public AdmissionsController(SmsDbContext db, AdmissionsService svc, ICrmProvider crm, AdmissionsAiService ai, IAiAssistant aiAssistant)
+    { _db = db; _svc = svc; _crm = crm; _ai = ai; _aiAssistant = aiAssistant; }
 
     [HttpGet("crm/health")]
     public async Task<ActionResult<object>> CrmHealth(CancellationToken ct)
@@ -106,6 +110,29 @@ public class AdmissionsController : ControllerBase
               return Ok(new { studentId = s.Id, s.StudentNumber, s.Status }); }
         catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
     }
+
+    [HttpGet("ai/health")]
+    public ActionResult<object> AiHealth()
+        => Ok(new { provider = _aiAssistant.Name, configured = _aiAssistant.IsConfigured });
+
+    /// <summary>Produce an ADVISORY admission recommendation (AI if enabled, else rules).
+    /// A human still approves via /decision (second-person). Never auto-decides.</summary>
+    [HttpPost("applications/{id:int}/ai-recommend")]
+    public async Task<ActionResult<object>> Recommend(int id, CancellationToken ct)
+    {
+        try
+        {
+            var r = await _ai.RecommendAsync(id, ct);
+            return Ok(new { r.RecommendedCategory, r.Confidence, r.Rationale, r.Source, r.MissingDocuments });
+        }
+        catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
+    }
+
+    [HttpGet("applications/{id:int}/recommendations")]
+    public async Task<ActionResult<object>> Recommendations(int id, CancellationToken ct)
+        => Ok(await _db.AdmissionRecommendations.AsNoTracking().Where(x => x.ApplicationId == id)
+            .OrderByDescending(x => x.CreatedUtc)
+            .Select(x => new { x.RecommendedCategory, x.Confidence, x.Rationale, x.Source, x.CreatedUtc }).ToListAsync(ct));
 
     async Task<IActionResult> Act(Func<Task> f)
     {

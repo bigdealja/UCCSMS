@@ -123,6 +123,58 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.ToTable("Applications");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.AdmissionRecommendation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Accepted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("Confidence")
+                        .HasColumnType("float");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MissingDocuments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Rationale")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RecommendedCategory")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Source")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("AdmissionRecommendations");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.ApplicationDocument", b =>
                 {
                     b.Property<int>("Id")
@@ -1215,6 +1267,17 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.Navigation("Programme");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.AdmissionRecommendation", b =>
+                {
+                    b.HasOne("SMS.Domain.Entities.AdmissionApplication", "Application")
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Application");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.ApplicationDocument", b =>

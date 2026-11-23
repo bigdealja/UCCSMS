@@ -16,6 +16,7 @@ export default function AdmissionsPage() {
   const [newLead, setNewLead] = useState({ firstName: '', lastName: '', email: '', source: 'Website' })
   const [err, setErr] = useState<string | null>(null)
   const [reload, setReload] = useState(0)
+  const [aiRec, setAiRec] = useState<string | null>(null)
 
   useEffect(() => { api.get<Health>('/api/admissions/crm/health').then(setHealth).catch(() => {}) }, [])
   useEffect(() => { api.get<Lookup[]>('/api/lookups/programmes').then(setProgrammes).catch(() => {}) }, [])
@@ -33,6 +34,8 @@ export default function AdmissionsPage() {
   const review = (id: number) => go(() => api.post(`/api/admissions/applications/${id}/review`, {}))
   const decide = (id: number) => { const c = prompt(`Decision category:\n${CATEGORIES.join('\n')}`); if (c) go(() => api.post(`/api/admissions/applications/${id}/decision`, { category: c })) }
   const respond = (id: number, r: string) => go(() => api.post(`/api/admissions/applications/${id}/offer-response`, { response: r }))
+  const aiRecommend = (id: number) => go(() => api.post<any>(`/api/admissions/applications/${id}/ai-recommend`, {}).then(r =>
+    setAiRec(`AI/Rules suggests: ${r.recommendedCategory} (confidence ${(r.confidence*100).toFixed(0)}%, via ${r.source}). ${r.rationale ?? ''} — a human still approves the decision.`)))
   const toStudent = (id: number) => { const n = prompt('New student number?'); if (n) go(() => api.post(`/api/admissions/applications/${id}/convert-to-student`, { studentNumber: n })) }
 
   return (
@@ -44,6 +47,7 @@ export default function AdmissionsPage() {
           Your website posts leads to <code>POST /api/public/lead</code> (no Mautic needed).</p>
       </div>
       {err && <p className="error">{err}</p>}
+      {aiRec && <div className="card success-box"><b>Recommendation (advisory):</b> {aiRec}</div>}
 
       <div className="card">
         <h3>Leads</h3>
@@ -76,6 +80,7 @@ export default function AdmissionsPage() {
               <td className="actions">
                 {a.status === 'Draft' && <button className="link" onClick={() => submit(a.id)}>Submit</button>}
                 {a.status === 'Submitted' && <button className="link" onClick={() => review(a.id)}>Review</button>}
+                {a.status === 'UnderReview' && <button className="link" onClick={() => aiRecommend(a.id)}>AI suggest</button>}
                 {a.status === 'UnderReview' && <button className="link" onClick={() => decide(a.id)}>Decide</button>}
                 {a.status === 'Accepted' && a.offerResponse === 'Pending' && <button className="link" onClick={() => respond(a.id, 'Accepted')}>Offer: Accept</button>}
                 {a.status === 'Accepted' && !a.studentId && <button className="link" onClick={() => toStudent(a.id)}>→ Student</button>}

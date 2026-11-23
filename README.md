@@ -101,7 +101,7 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **6b — Admissions / CRM lifecycle** ✅ | Leads → application → review → decision (second-person) → offer response → student; built-in CRM + public web capture + pluggable `ICrmProvider` |
 | **7 — Exam expansion** | Rooms/venues, room allocation, clash detection, special arrangements, invigilation |
 | **8 — Case management** | 14 case types (queries, appeals, irregularities, remarks …) |
-| **9 — AI assistant layer** | `IAiAssistant`: lead/application processing + staff/student help (human-in-the-loop) |
+| **9 — AI assistant layer** ✅ (admissions) | `IAiAssistant` (pluggable, off by default); AI recommends an admission category + flags missing docs, a human approves. Staff/student Q&A assistant is the next AI increment. |
 | **10 — Governance & integrations** | Grade governance, external examiners, scripts/custody, HR provider, notifications/KPIs |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
@@ -200,6 +200,25 @@ platform** (no separate system):
 
 API under `/api/admissions/*` (leads, applications, decision, offer-response, convert-to-student)
 and `POST /api/public/lead`. Config: `Crm:Provider`, `Crm:CaptureSecret`, `Crm:Webhook:Url`.
+
+## AI assistant (Phase 9 — admissions)
+
+AI automates the lead-to-admit paperwork the Admissions Policy describes (today staff retype
+application data into spreadsheets), under a strict rule from both policies: **AI recommends, a
+human decides.**
+
+- **Pluggable & off by default** — `IAiAssistant`: `None` (default) or `OpenAiCompatible` (OpenAI,
+  Azure OpenAI, or a self-hosted model gateway). Enabled only when `Ai:Enabled=true`
+  (data-protection approval); the API key is an environment secret, never in source.
+- **Advisory recommendation** — `POST /api/admissions/applications/{id}/ai-recommend` judges the
+  applicant against the policy's admission categories (Full Acceptance, Full-to-Core, Conditional
+  Class 1/2, Mature Entrant, Provisional) and flags missing documents. It is stored as an
+  `AdmissionRecommendation` for audit and **never changes the decision**.
+- **Graceful fallback** — with AI disabled, a deterministic rule-based recommendation is produced,
+  so the feature works with or without a model.
+- A human then approves through the existing **second-person** `/decision` workflow.
+
+`GET /api/admissions/ai/health` reports the provider and whether it's configured.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

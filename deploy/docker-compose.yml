@@ -54,6 +54,10 @@ services:
       Crm__Provider: "${CRM_PROVIDER:-BuiltIn}"
       Crm__CaptureSecret: "${CRM_CAPTURE_SECRET:-}"
       Crm__Webhook__Url: "${CRM_WEBHOOK_URL:-}"
+      Ai__Provider: "${AI_PROVIDER:-None}"
+      Ai__Enabled: "${AI_ENABLED:-false}"
+      Ai__BaseUrl: "${AI_BASEURL:-}"
+      Ai__Model: "${AI_MODEL:-}"
     depends_on: [ db, auth ]
 
   web:
