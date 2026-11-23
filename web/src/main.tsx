@@ -8,6 +8,7 @@ import GradeImportPage from './pages/GradeImportPage'
 import MoodlePage from './pages/MoodlePage'
 import ExamsPage from './pages/ExamsPage'
 import ExamSchedulingPage from './pages/ExamSchedulingPage'
+import CasesPage from './pages/CasesPage'
 import DocumentsPage from './pages/DocumentsPage'
 import FinancePage from './pages/FinancePage'
 import GradingPage from './pages/GradingPage'
@@ -27,6 +28,7 @@ function Shell() {
           <NavLink to="/exams">Examinations</NavLink>
           <NavLink to="/exam-scheduling">Exam Scheduling</NavLink>
           <NavLink to="/grading">Grade Schemes</NavLink>
+          <NavLink to="/cases">Cases</NavLink>
           <NavLink to="/documents">Documents</NavLink>
           <NavLink to="/finance">Finance</NavLink>
           <NavLink to="/moodle">Moodle Sync</NavLink>
@@ -44,6 +46,7 @@ function Shell() {
           <Route path="/exams" element={<ExamsPage />} />
           <Route path="/exam-scheduling" element={<ExamSchedulingPage />} />
           <Route path="/grading" element={<GradingPage />} />
+          <Route path="/cases" element={<CasesPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/finance" element={<FinancePage />} />
         </Routes>

@@ -15,6 +15,7 @@ using SMS.Infrastructure.Grading;
 using SMS.Application.Crm;
 using SMS.Infrastructure.Crm;
 using SMS.Infrastructure.Admissions;
+using SMS.Infrastructure.Cases;
 using SMS.Application.Ai;
 using SMS.Infrastructure.Ai;
 using SMS.Infrastructure.Persistence;
@@ -78,6 +79,7 @@ public static class DependencyInjection
         else
             services.AddScoped<IAiAssistant, NullAiAssistant>();
         services.AddScoped<AdmissionsAiService>();
+        services.AddScoped<CaseService>();
         return services;
     }
 }

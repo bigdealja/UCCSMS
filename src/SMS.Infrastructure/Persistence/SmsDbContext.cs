@@ -34,6 +34,9 @@ public class SmsDbContext : DbContext
     public DbSet<AdmissionApplication> Applications => Set<AdmissionApplication>();
     public DbSet<ApplicationDocument> ApplicationDocuments => Set<ApplicationDocument>();
     public DbSet<AdmissionRecommendation> AdmissionRecommendations => Set<AdmissionRecommendation>();
+    public DbSet<CaseType> CaseTypes => Set<CaseType>();
+    public DbSet<Case> Cases => Set<Case>();
+    public DbSet<CaseAction> CaseActions => Set<CaseAction>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -96,6 +99,9 @@ public class SmsDbContext : DbContext
         b.Entity<AdmissionApplication>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<ApplicationDocument>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<AdmissionRecommendation>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<CaseType>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<Case>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<CaseAction>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken ct = default)

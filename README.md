@@ -100,7 +100,7 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **6a — Grade-scheme engine** ✅ | UCC Examination Policy scales (Bachelors/Masters/Occupational), special grades, pass rules, credit-weighted GPA — configurable & versioned |
 | **6b — Admissions / CRM lifecycle** ✅ | Leads → application → review → decision (second-person) → offer response → student; built-in CRM + public web capture + pluggable `ICrmProvider` |
 | **7 — Exam expansion** ✅ | Rooms/venues, capacity-checked room allocation, invigilator assignment, special arrangements, automatic clash detection |
-| **8 — Case management** | 14 case types (queries, appeals, irregularities, remarks …) |
+| **8 — Case management** ✅ | 14 configurable case types, working-day due dates, second-person approval, overdue/due-soon, dashboard, append-only history |
 | **9 — AI assistant layer** ✅ (admissions) | `IAiAssistant` (pluggable, off by default); AI recommends an admission category + flags missing docs, a human approves. Staff/student Q&A assistant is the next AI increment. |
 | **10 — Governance & integrations** | Grade governance, external examiners, scripts/custody, HR provider, notifications/KPIs |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
@@ -236,6 +236,24 @@ Extends the Examinations module with the EMS brief's timetabling capabilities:
 
 API under `/api/examscheduling/*` (rooms, allocate-room, invigilators, arrangements,
 `clashes/{termId}`). A React **Exam Scheduling** page manages rooms and runs the clash check.
+
+## Case management (Phase 8)
+
+The staff-work backbone from the EMS brief: every query, appeal, grade amendment, irregularity,
+remark, etc. is a tracked case.
+
+- **14 configurable case types** seeded (Query, Grade Amendment, Add/Drop, Alternative Request,
+  Resit Request, Clash Form, EE Recruitment/Contract, Irregularity, Coursework Breach, Appeal,
+  Committee Action Item, Script Remark, Script Review, Change of Exam Location) — each with a
+  working-day turnaround and whether it needs second-person approval.
+- **Due dates in working days** (weekends skipped); **overdue** and **due-soon** are computed from
+  the dates, never typed in.
+- **Second-person approval** on sensitive types — the approver cannot be the raiser or assignee.
+- **Append-only history** of every note, assignment, approval, resolution and cancellation.
+- **Dashboard** (open / overdue / due-soon / pending approval, and counts by type) and list filters.
+
+API under `/api/cases/*` (types, dashboard, list, create, notes, assign, approve, resolve, cancel,
+link). A React **Cases** page with the dashboard, intake form and work list.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

@@ -51,3 +51,7 @@ public record AllocateRoomDto(int RoomId, int Seats);
 public record AssignInvigilatorDto(int StaffFacultyId, string Role);
 public record ArrangementDto(int Id, int StudentId, string Type, int ExtraTimePercent, string? Details, bool Approved);
 public record UpsertArrangementDto(int StudentId, string Type, int ExtraTimePercent, string? Details, bool Approved);
+
+public record CaseTypeDto(int Id, string Code, string Name, int TurnaroundWorkingDays, bool RequiresSecondPersonApproval);
+public record CaseDto(int Id, string CaseNumber, string Type, string Title, string Status, string Priority, int? StudentId, string? AssignedTo, string? RaisedBy, string DueUtc, bool Overdue, bool DueSoon);
+public record CreateCaseDto(int CaseTypeId, string Title, string? Description, int? StudentId, string Priority);
