@@ -17,6 +17,7 @@ using SMS.Infrastructure.Crm;
 using SMS.Infrastructure.Admissions;
 using SMS.Infrastructure.Cases;
 using SMS.Infrastructure.Notifications;
+using SMS.Infrastructure.Assistant;
 using SMS.Application.Ai;
 using SMS.Infrastructure.Ai;
 using SMS.Infrastructure.Persistence;
@@ -84,6 +85,7 @@ public static class DependencyInjection
         services.AddScoped<NotificationService>();
         services.AddScoped<AlertsService>();
         services.AddScoped<MetricsService>();
+        services.AddScoped<AssistantService>();
         return services;
     }
 }

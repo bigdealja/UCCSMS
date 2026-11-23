@@ -55,3 +55,7 @@ public record UpsertArrangementDto(int StudentId, string Type, int ExtraTimePerc
 public record CaseTypeDto(int Id, string Code, string Name, int TurnaroundWorkingDays, bool RequiresSecondPersonApproval);
 public record CaseDto(int Id, string CaseNumber, string Type, string Title, string Status, string Priority, int? StudentId, string? AssignedTo, string? RaisedBy, string DueUtc, bool Overdue, bool DueSoon);
 public record CreateCaseDto(int CaseTypeId, string Title, string? Description, int? StudentId, string Priority);
+
+public record AskDto(string Question, int? StudentId);
+public record KnowledgeArticleDto(int Id, string Title, string Category, string Body, string? Tags);
+public record UpsertArticleDto(string Title, string Category, string Body, string? Tags);

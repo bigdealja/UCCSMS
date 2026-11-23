@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom'
 import StudentsPage from './pages/StudentsPage'
 import AdmissionsPage from './pages/AdmissionsPage'
 import DashboardPage from './pages/DashboardPage'
+import AssistantPage from './pages/AssistantPage'
 import StudentForm from './pages/StudentForm'
 import GradeImportPage from './pages/GradeImportPage'
 import MoodlePage from './pages/MoodlePage'
@@ -29,6 +30,7 @@ function Shell() {
           <NavLink to="/exams">Examinations</NavLink>
           <NavLink to="/exam-scheduling">Exam Scheduling</NavLink>
           <NavLink to="/grading">Grade Schemes</NavLink>
+          <NavLink to="/assistant">Assistant</NavLink>
           <NavLink to="/cases">Cases</NavLink>
           <NavLink to="/documents">Documents</NavLink>
           <NavLink to="/finance">Finance</NavLink>
@@ -47,6 +49,7 @@ function Shell() {
           <Route path="/exams" element={<ExamsPage />} />
           <Route path="/exam-scheduling" element={<ExamSchedulingPage />} />
           <Route path="/grading" element={<GradingPage />} />
+          <Route path="/assistant" element={<AssistantPage />} />
           <Route path="/cases" element={<CasesPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/finance" element={<FinancePage />} />

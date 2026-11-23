@@ -62,6 +62,7 @@ if (app.Environment.IsDevelopment())
         await SMS.Infrastructure.Persistence.SeedData.EnsureSeededAsync(db);
         await SMS.Infrastructure.Grading.GradeSchemeSeeder.EnsureSeededAsync(db);
         await SMS.Infrastructure.Cases.CaseTypeSeeder.EnsureSeededAsync(db);
+        await SMS.Infrastructure.Assistant.KnowledgeSeeder.EnsureSeededAsync(db);
     }
     catch (Exception ex)
     {
