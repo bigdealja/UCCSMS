@@ -16,6 +16,10 @@ public class SmsDbContext : DbContext
     public DbSet<Student> Students => Set<Student>();
     public DbSet<Enrollment> Enrollments => Set<Enrollment>();
     public DbSet<StaffFaculty> StaffFaculty => Set<StaffFaculty>();
+    public DbSet<Exam> Exams => Set<Exam>();
+    public DbSet<Question> Questions => Set<Question>();
+    public DbSet<ExamQuestion> ExamQuestions => Set<ExamQuestion>();
+    public DbSet<ExamResult> ExamResults => Set<ExamResult>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -32,6 +36,9 @@ public class SmsDbContext : DbContext
         b.Entity<Enrollment>().HasIndex(x => new { x.StudentId, x.CourseId, x.TermId }).IsUnique();
         b.Entity<Enrollment>().HasIndex(x => x.ImportBatchId);
 
+        b.Entity<ExamResult>().HasIndex(x => new { x.ExamId, x.StudentId }).IsUnique();
+        b.Entity<ExamQuestion>().HasIndex(x => new { x.ExamId, x.QuestionId }).IsUnique();
+
         // Don't cascade-delete across the academic graph
         foreach (var fk in b.Model.GetEntityTypes().SelectMany(t => t.GetForeignKeys()))
             fk.DeleteBehavior = DeleteBehavior.Restrict;
@@ -44,6 +51,10 @@ public class SmsDbContext : DbContext
         b.Entity<Student>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<Enrollment>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<StaffFaculty>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<Exam>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<Question>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<ExamQuestion>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<ExamResult>().HasQueryFilter(x => !x.IsDeleted);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken ct = default)
