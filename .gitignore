@@ -7,5 +7,10 @@ node_modules/
 dist/
 # Secrets & local config
 deploy/.env
+deploy/secrets/
 appsettings.*.local.json
 *.pfx
+# TLS certificates / keys (never commit)
+deploy/certs/
+*.pem
+*.key

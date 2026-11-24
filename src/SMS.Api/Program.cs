@@ -14,6 +14,13 @@ try
 
 var builder = WebApplication.CreateBuilder(args);
 
+// --- File-based secrets (Docker / Kubernetes secrets) ---
+// Any file mounted under /run/secrets overrides configuration: the file name is the config key
+// (use "__" to nest, e.g. a file "ConnectionStrings__Sms" sets ConnectionStrings:Sms; "Auth__Audience"
+// sets Auth:Audience). This keeps real secrets out of the environment and out of source, and works
+// with Docker secrets, Kubernetes secrets, and any orchestrator that projects secrets as files.
+builder.Configuration.AddKeyPerFile(directoryPath: "/run/secrets", optional: true, reloadOnChange: false);
+
 // --- Structured logging (Serilog) ---
 // Console sink; JSON in Production for log shippers, human-readable in Development.
 builder.Host.UseSerilog((ctx, services, cfg) =>
@@ -26,6 +33,17 @@ builder.Host.UseSerilog((ctx, services, cfg) =>
         cfg.WriteTo.Console(new Serilog.Formatting.Compact.CompactJsonFormatter());
     else
         cfg.WriteTo.Console();
+});
+
+// Behind the nginx TLS terminator: trust X-Forwarded-For/Proto so the app sees the real
+// client IP and the https scheme (correct redirects, secure cookies, OIDC). The proxy runs on
+// the trusted internal compose network, so we accept the forwarded headers from it.
+builder.Services.Configure<Microsoft.AspNetCore.Builder.ForwardedHeadersOptions>(o =>
+{
+    o.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor
+                       | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    o.KnownNetworks.Clear();
+    o.KnownProxies.Clear();
 });
 
 builder.Services.AddControllers();
@@ -99,6 +117,7 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
 
 var app = builder.Build();
 
+app.UseForwardedHeaders();         // must run before anything that reads scheme/remote IP
 app.UseSerilogRequestLogging();   // one tidy log line per request, with timing
 app.UseSwagger();
 app.UseSwaggerUI();
