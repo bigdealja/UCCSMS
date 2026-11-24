@@ -35,6 +35,8 @@ services:
     volumes: [ "minio-data:/data" ]
 
   api:
+    # CI publishes this image; `docker compose build` also tags the local build as it.
+    image: "${IMAGE_API:-ghcr.io/bigdealja/uccsms-api:latest}"
     build: { context: .., dockerfile: deploy/Dockerfile.api }
     environment:
       ASPNETCORE_ENVIRONMENT: Production
@@ -65,10 +67,13 @@ services:
       Hr__Provider: "${HR_PROVIDER:-None}"
       Hr__Webhook__Url: "${HR_WEBHOOK_URL:-}"
     depends_on: [ db, auth ]
+    restart: unless-stopped
 
   web:
+    image: "${IMAGE_WEB:-ghcr.io/bigdealja/uccsms-web:latest}"
     build: { context: .., dockerfile: deploy/Dockerfile.web }
     depends_on: [ api ]
+    restart: unless-stopped
 
   # --- Scheduled backups (daily by default; retention BACKUP_RETENTION_DAYS) ---
   db-backup:

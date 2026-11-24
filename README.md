@@ -121,7 +121,7 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **Exam-work payments (HR)** ✅ | Dated rate tables, work claims computed from rates, second-person approval, pluggable HR/payroll export |
 | **Data migration toolkit** ✅ | Staged, idempotent Aeorion→new migration (SQL or CSV source), reconciliation report, dry-run — see MIGRATION.md |
 | **Student services** ✅ | Housing (assign/check-in/out), sports participation, chapel attendance + attendance-rate summary, confidential health visits (own permission, audit-logged) |
-| **Remaining** | Production hardening (CI/CD, TLS, secrets manager, observability, backups) |
+| **Production hardening** ✅ | Structured logging, health probes, OpenTelemetry; TLS + security headers; file-based secrets; scheduled backups + restore; CI/CD image publish & gated deploy — see Operations below |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
@@ -528,3 +528,42 @@ Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,
 `SMS_Apply`, `NCUChapel`. The reverse-engineered table and stored-procedure names give a
 direct source→target mapping; migration is built as its own phase, running old and new in
 parallel until cutover.
+
+## Operations (production hardening)
+
+Everything below runs on your own servers via `deploy/docker-compose.yml`; `nginx` is the only
+internet-facing service.
+
+### Observability
+- **Structured logging** — Serilog; human-readable in Development, **compact JSON** in Production
+  (ready for Loki/ELK/any shipper), enriched with a `service` field and one line per request.
+- **Health probes** — `/health/live` (liveness, no dependencies) and `/health/ready` (readiness,
+  checks the database). Wire these to container/orchestrator probes; `proxy` exposes `/health`.
+- **Tracing & metrics** — OpenTelemetry over OTLP, **off until** you set `OTEL_EXPORTER_OTLP_ENDPOINT`
+  (or `Otel:Endpoint`), so it's vendor-neutral — point it at Jaeger/Tempo/Prometheus/Grafana/etc.
+
+### TLS & security headers
+`deploy/nginx.conf` redirects HTTP→HTTPS, terminates TLS 1.2/1.3, and sends HSTS, CSP,
+`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, COOP and `Permissions-Policy`.
+Get a certificate with `deploy/gen-selfsigned-cert.sh` (quick start) or Let's Encrypt / your PKI
+(see `deploy/certbot/README.md`). The API honours `X-Forwarded-Proto` from the proxy.
+
+### Secrets
+Never commit secrets. Configure them one of three ways, in increasing order of safety:
+1. `deploy/.env` (copy from `deploy/.env.example`) — simplest.
+2. **Docker/Kubernetes secrets** mounted at `/run/secrets` — the API reads them via .NET KeyPerFile
+   (file name = config key, `__` nests). See `deploy/docker-compose.secrets.yml`.
+3. An external manager (Vault, cloud secret store, institution KMS) projecting files/env.
+
+### Backups
+`db-backup` and `storage-backup` sidecars take daily SQL Server `.bak` dumps and MinIO mirrors,
+with retention `BACKUP_RETENTION_DAYS`. Restore and verify steps: `deploy/backup/README.md`.
+
+### CI/CD
+- **CI** (`.github/workflows/ci.yml`) — builds and tests backend + frontend on every push/PR.
+- **CD** (`.github/workflows/cd.yml`) — on `main` and `v*.*.*` tags, builds and pushes the API and
+  web images to **GHCR** (tagged by SHA + semver + `latest`). An optional `deploy` job, gated by the
+  `production` GitHub Environment (add required reviewers) and the `DEPLOY_ENABLED` repo variable,
+  SSHes to the on-prem host, pulls the SHA-pinned images, rolls `docker compose up -d`, and
+  smoke-checks `/health`. Deploy secrets: `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY`,
+  `DEPLOY_KNOWN_HOSTS`, `DEPLOY_PATH`, `DEPLOY_PUBLIC_URL`.
