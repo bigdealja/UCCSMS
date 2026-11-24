@@ -11,4 +11,10 @@ public interface ILegacySource
     IReadOnlyList<LegacyCourse> Courses();
     IReadOnlyList<LegacyStudent> Students();
     IReadOnlyList<LegacyEnrollment> Enrollments();
+
+    // Optional historical data. Default to empty so a source only implements what it exports.
+    IReadOnlyList<LegacyFeeType> FeeTypes() => Array.Empty<LegacyFeeType>();
+    IReadOnlyList<LegacyFinanceTxn> FinanceTransactions() => Array.Empty<LegacyFinanceTxn>();
+    IReadOnlyList<LegacyLead> Leads() => Array.Empty<LegacyLead>();
+    IReadOnlyList<LegacyApplication> Applications() => Array.Empty<LegacyApplication>();
 }

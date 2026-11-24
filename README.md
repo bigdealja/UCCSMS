@@ -119,7 +119,7 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **Assessment operations register** ✅ | One record per sitting; milestones drive auto stage + status (ready/at-risk/overdue/blocked/complete) + needs-attention view |
 | **Advisement & graduation** ✅ | Programme progress (credits earned/required, GPA, outstanding/failed courses) + graduation-eligibility verdict |
 | **Exam-work payments (HR)** ✅ | Dated rate tables, work claims computed from rates, second-person approval, pluggable HR/payroll export |
-| **Data migration toolkit** ✅ | Staged, idempotent Aeorion→new migration (SQL or CSV source), reconciliation report, dry-run — see MIGRATION.md |
+| **Data migration toolkit** ✅ | Staged, idempotent Aeorion→new migration (SQL or CSV source): academic spine + finance ledger + admissions (leads/applications), reconciliation report, dry-run — see MIGRATION.md |
 | **Student services** ✅ | Housing (assign/check-in/out), sports participation, chapel attendance + attendance-rate summary, confidential health visits (own permission, audit-logged) |
 | **Production hardening** ✅ | Structured logging, health probes, OpenTelemetry; TLS + security headers; file-based secrets; scheduled backups + restore; CI/CD image publish & gated deploy — see Operations below |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
@@ -528,6 +528,14 @@ Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,
 `SMS_Apply`, `NCUChapel`. The reverse-engineered table and stored-procedure names give a
 direct source→target mapping; migration is built as its own phase, running old and new in
 parallel until cutover.
+
+The toolkit (`tools/SMS.Migration`, see **MIGRATION.md**) is a staged, idempotent, dry-runnable
+loader with a reconciliation report. It migrates the academic spine (campuses → schools →
+programmes → terms → courses → students → enrolments) plus **finance history** (fee types and the
+student ledger, with charge/payment signs normalised and insert-once de-duplication) and
+**admissions history** (leads and applications, applications linked back to their lead). The source
+is pluggable — the live Aeorion SQL Server (`SqlLegacySource`, with overridable per-table queries)
+or exported CSVs (`CsvLegacySource`) for an offline run.
 
 ## Operations (production hardening)
 

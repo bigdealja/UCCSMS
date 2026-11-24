@@ -112,8 +112,80 @@ public class MigrationRunner
         }
         await SaveAsync(dryRun, ct);
 
+        // ---- Finance history ----
+        // Fee types (key: Code)
+        var feeTypeByCode = await _db.FeeTypes.IgnoreQueryFilters().ToDictionaryAsync(f => f.Code, f => f, ct);
+        var rft = report.For("FeeType");
+        foreach (var r in _src.FeeTypes())
+        {
+            rft.Source++;
+            if (feeTypeByCode.TryGetValue(r.Code, out var e)) { e.Name = r.Name; e.DefaultAmount = r.DefaultAmount; e.DistributionCode = r.DistributionCode; rft.Updated++; }
+            else { var e2 = Mappers.ToFeeType(r); _db.FeeTypes.Add(e2); feeTypeByCode[e2.Code] = e2; rft.Inserted++; }
+        }
+        await SaveAsync(dryRun, ct);
+
+        // Financial transactions (resolve student; optional fee type + term). Idempotency key is the
+        // legacy Reference when present, otherwise a composite of student/type/amount/date.
+        var existingTxns = await _db.FinancialTransactions.IgnoreQueryFilters().ToListAsync(ct);
+        var txnKeys = new HashSet<string>(existingTxns.Select(t => TxnKey(t, t.StudentId)));
+        var rtx = report.For("FinancialTransaction");
+        foreach (var r in _src.FinanceTransactions())
+        {
+            rtx.Source++;
+            if (!studentByNumber.TryGetValue(r.StudentNumber, out var s)) { rtx.Skipped++; rtx.Errors.Add($"Finance txn: unknown student '{r.StudentNumber}'."); continue; }
+            int? feeTypeId = r.FeeTypeCode is not null && feeTypeByCode.TryGetValue(r.FeeTypeCode, out var ft) ? ft.Id : null;
+            int? termId = r.TermName is not null && r.TermYear is not null && termByKey.TryGetValue(r.TermName + "|" + r.TermYear, out var tm) ? tm.Id : null;
+            var entity = Mappers.ToFinanceTxn(r, s.Id, feeTypeId, termId);
+            var key = TxnKey(entity, s.Id);
+            if (txnKeys.Contains(key)) { rtx.Updated++; continue; }   // already migrated — leave the ledger untouched
+            _db.FinancialTransactions.Add(entity); txnKeys.Add(key); rtx.Inserted++;
+        }
+        await SaveAsync(dryRun, ct);
+
+        // ---- Admissions history ----
+        // Leads (key: ExternalCrmId). Optional programme-of-interest.
+        var leadByRef = await _db.Leads.IgnoreQueryFilters().Where(l => l.ExternalCrmId != null)
+            .ToDictionaryAsync(l => l.ExternalCrmId!, l => l, ct);
+        var rl = report.For("Lead");
+        foreach (var r in _src.Leads())
+        {
+            rl.Source++;
+            int? poiId = !string.IsNullOrWhiteSpace(r.ProgrammeCode) && progByCode.TryGetValue(r.ProgrammeCode, out var pp) ? pp.Id : null;
+            if (leadByRef.TryGetValue(r.ExternalRef, out var e))
+            { e.FirstName = r.FirstName; e.LastName = r.LastName; e.Email = r.Email; e.Status = Mappers.MapLeadStatus(r.Status); e.ProgrammeOfInterestId = poiId; rl.Updated++; }
+            else { var e2 = Mappers.ToLead(r, poiId); _db.Leads.Add(e2); leadByRef[r.ExternalRef] = e2; rl.Inserted++; }
+        }
+        await SaveAsync(dryRun, ct);
+
+        // Applications (key: ApplicationNumber). Require programme + intake term; link lead if present.
+        var appByNumber = await _db.Applications.IgnoreQueryFilters().ToDictionaryAsync(a => a.ApplicationNumber, a => a, ct);
+        var ra = report.For("Application");
+        foreach (var r in _src.Applications())
+        {
+            ra.Source++;
+            if (!progByCode.TryGetValue(r.ProgrammeCode, out var prog)) { ra.Skipped++; ra.Errors.Add($"Application '{r.ApplicationNumber}': unknown programme '{r.ProgrammeCode}'."); continue; }
+            if (r.IntakeTermName is null || r.IntakeTermYear is null || !termByKey.TryGetValue(r.IntakeTermName + "|" + r.IntakeTermYear, out var term))
+            { ra.Skipped++; ra.Errors.Add($"Application '{r.ApplicationNumber}': unknown intake term '{r.IntakeTermName} {r.IntakeTermYear}'."); continue; }
+            int? leadId = !string.IsNullOrWhiteSpace(r.LeadExternalRef) && leadByRef.TryGetValue(r.LeadExternalRef!, out var ld) ? ld.Id : null;
+            if (appByNumber.TryGetValue(r.ApplicationNumber, out var e))
+            {
+                e.FirstName = r.FirstName; e.LastName = r.LastName; e.Email = r.Email; e.ProgrammeId = prog.Id; e.IntakeTermId = term.Id;
+                e.Status = Mappers.MapApplicationStatus(r.Status); e.Decision = Mappers.MapAdmissionCategory(r.Decision);
+                e.AssignedOfficer = r.AssignedOfficer; e.DecidedBy = r.DecidedBy; e.SubmittedUtc = r.SubmittedUtc; e.DecidedUtc = r.DecidedUtc;
+                if (leadId is not null) e.LeadId = leadId; ra.Updated++;
+            }
+            else { var e2 = Mappers.ToApplication(r, prog.Id, term.Id, leadId); _db.Applications.Add(e2); appByNumber[e2.ApplicationNumber] = e2; ra.Inserted++; }
+        }
+        await SaveAsync(dryRun, ct);
+
         return report;
     }
+
+    // Stable natural key for a ledger entry: prefer the legacy reference; otherwise compose one.
+    static string TxnKey(SMS.Domain.Entities.FinancialTransaction t, int studentId) =>
+        !string.IsNullOrWhiteSpace(t.Reference)
+            ? $"REF|{studentId}|{t.Reference!.Trim().ToLowerInvariant()}"
+            : $"CMP|{studentId}|{t.Type}|{t.Amount}|{t.PostedUtc.UtcDateTime:yyyyMMddHHmmss}";
 
     async Task SaveAsync(bool dryRun, CancellationToken ct)
     {

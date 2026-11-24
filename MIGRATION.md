@@ -12,7 +12,8 @@ reconciliation report").
 - **Pure mappers** (`Mappers`) translate legacy rows → new entities (status/level/term-type codes
   normalised); unit-tested, no DB needed.
 - **Staged runner** (`MigrationRunner`) loads in dependency order — campuses → schools → programmes
-  → terms → courses → students → enrolments — resolving relationships by natural key.
+  → terms → courses → students → enrolments → **fee types → financial transactions → leads →
+  applications** — resolving relationships by natural key.
 - **Idempotent**: re-running updates existing rows (matched by natural key) instead of duplicating.
 - **Dry run** (default): computes the reconciliation report **without writing**. `--apply` writes.
 - **Reconciliation report**: per entity, Source vs Inserted/Updated/Skipped and the list of errors
@@ -43,9 +44,23 @@ Exit code: `0` reconciled, `2` reconciled with skips/errors to review, `1` confi
 | Course | Code | `Courses` (→ ProgrammeCode) |
 | Student | StudentNumber | `sms_SI_V_Students` (→ ProgrammeCode, Status, Email, DOB) |
 | Enrollment | Student+Course+Term | `sms_ACA_V_StudentCourses` (LetterGrade, CourseworkMark, FinalExamMark) |
+| FeeType | Code | `sms_FIN_D_FeeTypes` (Name, DefaultAmount, DistributionCode) |
+| FinancialTransaction | Reference, else Student+Type+Amount+PostedUtc | `sms_FIN_V_StudentLedger` (→ StudentNumber, FeeTypeCode, Type, Amount, Method, Description, PostedUtc, Term) |
+| Lead | ExternalRef (→ ExternalCrmId) | `app_Leads` (Source, Status, ProgrammeCode, AssignedTo) |
+| Application | ApplicationNumber | `app_Applications` (→ ProgrammeCode, IntakeTerm, Status, Decision, officers, dates, LeadExternalRef) |
 
 The `SqlLegacySource` query strings are overridable — tune the SELECTs/column names to the actual
-Aeorion schema. Migrated grades are tagged `GradeSource = "Migration"`.
+Aeorion schema (finance lives in `ASM_UCC`, admissions in `SMS_Apply`). Notes:
+- **Ledger signs** are normalised to the new convention: charges positive, payments/refunds negative,
+  adjustments keep the legacy sign — so a student balance is just the sum of `Amount`. Legacy payments
+  stored as positive amounts are handled.
+- **Financial transactions** are insert-once (never updated), matched by the legacy `Reference` when
+  present (otherwise a student/type/amount/date composite), so re-runs never double-post the ledger.
+  Historical rows are marked `AccountingStatus = NotApplicable` so they are not re-exported to the
+  accounting system.
+- **Applications** need a known programme **and** intake term, or they are skipped and reported; a
+  `LeadExternalRef` links the application to its migrated lead when present.
+- Migrated grades are tagged `GradeSource = "Migration"`.
 
 ## CSV export format (for `SMS_LEGACY_CSV`)
 One file per entity, header row required (case-insensitive):
@@ -57,9 +72,17 @@ terms.csv         name,year,type,startdate,enddate,isactive
 courses.csv       code,title,credits,programmecode
 students.csv      studentnumber,firstname,lastname,email,dateofbirth,status,programmecode
 enrollments.csv   studentnumber,coursecode,termname,termyear,lettergrade,courseworkmark,finalexammark
+feetypes.csv      code,name,defaultamount,distributioncode
+finance.csv       studentnumber,reference,feetypecode,type,amount,method,description,postedutc,termname,termyear
+leads.csv         externalref,firstname,lastname,email,phone,source,status,programmecode,assignedto
+applications.csv  applicationnumber,firstname,lastname,email,dateofbirth,programmecode,intaketermname,intaketermyear,status,decision,assignedofficer,decidedby,submittedutc,decidedutc,leadexternalref
 ```
+The finance/admissions files are optional — include only what you export. `postedutc`,
+`submittedutc` and `decidedutc` accept ISO-8601 (e.g. `2026-09-01T00:00:00Z`).
 
 ## Scope & extension
-Covers the core academic entities (the replacement spine). Finance, admissions history and the
-exam-domain records extend the same pattern: add a `LegacyX` row + a mapper + a runner step.
-Everything migrates through the EF Core model, so the audit log records the load.
+Covers the academic spine (campuses…enrolments), **finance history** (fee types + ledger) and
+**admissions history** (leads + applications). The exam-domain records extend the same pattern: add a
+`LegacyX` row + a mapper + a runner step. `ILegacySource` gives the finance/admissions readers
+default (empty) implementations, so a source only implements what it actually exports. Everything
+migrates through the EF Core model, so the audit log records the load.

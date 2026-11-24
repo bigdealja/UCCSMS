@@ -18,6 +18,18 @@ public class CsvLegacySource : ILegacySource
     public IReadOnlyList<LegacyStudent> Students() => Read("students.csv", f => new LegacyStudent(f["studentnumber"], f["firstname"], f["lastname"], Get(f, "email"), Date(f, "dateofbirth"), Get(f, "status"), f["programmecode"]));
     public IReadOnlyList<LegacyEnrollment> Enrollments() => Read("enrollments.csv", f => new LegacyEnrollment(f["studentnumber"], f["coursecode"], f["termname"], Int(f, "termyear"), Get(f, "lettergrade"), Dbl(f, "courseworkmark"), Dbl(f, "finalexammark")));
 
+    public IReadOnlyList<LegacyFeeType> FeeTypes() => Read("feetypes.csv", f => new LegacyFeeType(f["code"], f["name"], Dec(f, "defaultamount"), Get(f, "distributioncode")));
+    public IReadOnlyList<LegacyFinanceTxn> FinanceTransactions() => Read("finance.csv", f => new LegacyFinanceTxn(
+        f["studentnumber"], Get(f, "reference"), Get(f, "feetypecode"), Get(f, "type"), Dec(f, "amount"),
+        Get(f, "method"), Get(f, "description"), Dto(f, "postedutc"), Get(f, "termname"), NInt(f, "termyear")));
+    public IReadOnlyList<LegacyLead> Leads() => Read("leads.csv", f => new LegacyLead(
+        f["externalref"], f["firstname"], f["lastname"], Get(f, "email"), Get(f, "phone"),
+        Get(f, "source"), Get(f, "status"), Get(f, "programmecode"), Get(f, "assignedto")));
+    public IReadOnlyList<LegacyApplication> Applications() => Read("applications.csv", f => new LegacyApplication(
+        f["applicationnumber"], f["firstname"], f["lastname"], Get(f, "email"), Date(f, "dateofbirth"),
+        f["programmecode"], Get(f, "intaketermname"), NInt(f, "intaketermyear"), Get(f, "status"), Get(f, "decision"),
+        Get(f, "assignedofficer"), Get(f, "decidedby"), Dto(f, "submittedutc"), Dto(f, "decidedutc"), Get(f, "leadexternalref")));
+
     List<T> Read<T>(string file, Func<Dictionary<string, string>, T> map)
     {
         var path = Path.Combine(_dir, file);
@@ -40,6 +52,9 @@ public class CsvLegacySource : ILegacySource
     static string Get(Dictionary<string, string> f, string k) => f.TryGetValue(k, out var v) && v.Length > 0 ? v : null!;
     static int Int(Dictionary<string, string> f, string k) => f.TryGetValue(k, out var v) && int.TryParse(v, out var n) ? n : 0;
     static double? Dbl(Dictionary<string, string> f, string k) => f.TryGetValue(k, out var v) && double.TryParse(v, NumberStyles.Any, CultureInfo.InvariantCulture, out var n) ? n : null;
+    static decimal Dec(Dictionary<string, string> f, string k) => f.TryGetValue(k, out var v) && decimal.TryParse(v, NumberStyles.Any, CultureInfo.InvariantCulture, out var n) ? n : 0m;
+    static int? NInt(Dictionary<string, string> f, string k) => f.TryGetValue(k, out var v) && int.TryParse(v, out var n) ? n : null;
+    static DateTimeOffset? Dto(Dictionary<string, string> f, string k) => f.TryGetValue(k, out var v) && DateTimeOffset.TryParse(v, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var d) ? d : null;
     static bool Bool(Dictionary<string, string> f, string k) => f.TryGetValue(k, out var v) && (v == "1" || v.Equals("true", StringComparison.OrdinalIgnoreCase));
     static DateOnly? Date(Dictionary<string, string> f, string k) => f.TryGetValue(k, out var v) && DateOnly.TryParse(v, out var d) ? d : null;
 
