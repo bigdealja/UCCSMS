@@ -1,8 +1,32 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Serilog;
 using SMS.Infrastructure;
 
+// Bootstrap logger: captures anything that fails before the host is built.
+Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
+
+try
+{
+
 var builder = WebApplication.CreateBuilder(args);
+
+// --- Structured logging (Serilog) ---
+// Console sink; JSON in Production for log shippers, human-readable in Development.
+builder.Host.UseSerilog((ctx, services, cfg) =>
+{
+    cfg.ReadFrom.Configuration(ctx.Configuration)
+       .ReadFrom.Services(services)
+       .Enrich.FromLogContext()
+       .Enrich.WithProperty("service", "sms-api");
+    if (ctx.HostingEnvironment.IsProduction())
+        cfg.WriteTo.Console(new Serilog.Formatting.Compact.CompactJsonFormatter());
+    else
+        cfg.WriteTo.Console();
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -10,6 +34,33 @@ builder.Services.AddSwaggerGen(o =>
 {
     o.SwaggerDoc("v1", new OpenApiInfo { Title = "Student Management System API", Version = "v1" });
 });
+
+// --- Health checks: liveness (process up) + readiness (DB reachable) ---
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<SMS.Infrastructure.Persistence.SmsDbContext>("database", tags: new[] { "ready" });
+
+// --- OpenTelemetry: traces + metrics over OTLP (provider-agnostic) ---
+// Only wired when an OTLP endpoint is configured, so it stays off until you point it at a
+// collector (Jaeger/Tempo/Prometheus/Grafana/any OTLP backend) via OTEL_EXPORTER_OTLP_ENDPOINT.
+var otlpEndpoint = builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]
+                   ?? builder.Configuration["Otel:Endpoint"];
+if (!string.IsNullOrWhiteSpace(otlpEndpoint))
+{
+    var resource = ResourceBuilder.CreateDefault()
+        .AddService(serviceName: "sms-api",
+                    serviceVersion: System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "1.0.0");
+    builder.Services.AddOpenTelemetry()
+        .ConfigureResource(r => r.AddService("sms-api"))
+        .WithTracing(t => t
+            .AddAspNetCoreInstrumentation(o => o.RecordException = true)
+            .AddHttpClientInstrumentation()
+            .AddOtlpExporter())
+        .WithMetrics(m => m
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddRuntimeInstrumentation()
+            .AddOtlpExporter());
+}
 
 // --- Infrastructure (SQL Server via EF Core) ---
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -48,13 +99,27 @@ builder.Services.AddCors(o => o.AddDefaultPolicy(p =>
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();   // one tidy log line per request, with timing
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+// Kubernetes/compose-style probes.
+// /health        -> simple summary (back-compat)
+// /health/live   -> liveness: the process is up (no dependency checks)
+// /health/ready  -> readiness: dependencies (database) are reachable
 app.MapGet("/health", () => Results.Ok(new { status = "ok", utc = DateTimeOffset.UtcNow })).AllowAnonymous();
+app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = _ => false   // no checks -> healthy whenever the app can answer
+}).AllowAnonymous();
+app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+    Predicate = hc => hc.Tags.Contains("ready")
+}).AllowAnonymous();
 
 // In Development, create/seed the database so the UI has data. Tolerant of a missing DB
 // (the app still starts; endpoints that need the DB will report the error).
@@ -86,3 +151,17 @@ if (app.Environment.IsDevelopment())
 }
 
 app.Run();
+
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "SMS API terminated unexpectedly during startup");
+    throw;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+
+// Exposed so WebApplicationFactory-based integration tests can reference the entry point.
+public partial class Program { }
