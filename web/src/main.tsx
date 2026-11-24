@@ -9,6 +9,7 @@ import AccessPage from './pages/AccessPage'
 import AuditPage from './pages/AuditPage'
 import StudentForm from './pages/StudentForm'
 import AdvisementPage from './pages/AdvisementPage'
+import StudentServicesPage from './pages/StudentServicesPage'
 import GradeImportPage from './pages/GradeImportPage'
 import MoodlePage from './pages/MoodlePage'
 import ExamsPage from './pages/ExamsPage'
@@ -52,6 +53,7 @@ function Shell() {
           <NavLink to="/audit">Audit Trail</NavLink>
           <NavLink to="/cases">Cases</NavLink>
           <NavLink to="/documents">Documents</NavLink>
+          <NavLink to="/student-services">Student Services</NavLink>
           <NavLink to="/finance">Finance</NavLink>
           <NavLink to="/payroll">Exam-Work Pay</NavLink>
           <NavLink to="/moodle">Moodle Sync</NavLink>
@@ -81,6 +83,7 @@ function Shell() {
           <Route path="/audit" element={<AuditPage />} />
           <Route path="/cases" element={<CasesPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
+          <Route path="/student-services" element={<StudentServicesPage />} />
           <Route path="/finance" element={<FinancePage />} />
           <Route path="/payroll" element={<PayrollPage />} />
         </Routes>

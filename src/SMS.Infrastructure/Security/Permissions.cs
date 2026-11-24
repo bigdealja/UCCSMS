@@ -22,6 +22,9 @@ public static class Permissions
         ("papers.manage", "Manage question papers"),
         ("scripts.manage", "Manage script custody"),
         ("payroll.manage", "Manage exam-work pay claims"),
+        ("studentservices.read", "View housing/sports/chapel"),
+        ("studentservices.manage", "Manage housing/sports/chapel"),
+        ("health.manage", "Manage confidential health records"),
     };
 
     public static readonly Dictionary<string, string[]> RoleMap = new()
@@ -29,7 +32,7 @@ public static class Permissions
         ["Admin"] = All.Select(p => p.Key).ToArray(),
         ["Registrar"] = new[] { "students.read","students.write","admissions.read","admissions.decide","registration.write",
             "grades.read","grades.change.approve","documents.read","documents.write","cases.read","cases.create","cases.approve",
-            "reports.read","pdf.generate","exams.manage","audit.read","examiners.manage","papers.manage","scripts.manage","payroll.manage" },
+            "reports.read","pdf.generate","exams.manage","audit.read","examiners.manage","papers.manage","scripts.manage","payroll.manage","studentservices.read","studentservices.manage" },
         ["AdmissionsOfficer"] = new[] { "admissions.read","admissions.decide","students.read","documents.read","documents.write","cases.read","cases.create","pdf.generate" },
         ["ExaminationOfficer"] = new[] { "exams.manage","exams.schedule","grades.read","grades.change.propose","cases.read","cases.create","reports.read","pdf.generate","examiners.manage","papers.manage","scripts.manage" },
         ["Lecturer"] = new[] { "grades.read","grades.import","grades.change.propose","cases.read","cases.create","assistant.use" },

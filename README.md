@@ -120,7 +120,8 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **Advisement & graduation** ✅ | Programme progress (credits earned/required, GPA, outstanding/failed courses) + graduation-eligibility verdict |
 | **Exam-work payments (HR)** ✅ | Dated rate tables, work claims computed from rates, second-person approval, pluggable HR/payroll export |
 | **Data migration toolkit** ✅ | Staged, idempotent Aeorion→new migration (SQL or CSV source), reconciliation report, dry-run — see MIGRATION.md |
-| **Remaining** | Legacy student services (housing/health/sports/chapel), production hardening |
+| **Student services** ✅ | Housing (assign/check-in/out), sports participation, chapel attendance + attendance-rate summary, confidential health visits (own permission, audit-logged) |
+| **Remaining** | Production hardening (CI/CD, TLS, secrets manager, observability, backups) |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
@@ -502,6 +503,25 @@ Payment authorisation for exam work (marking, invigilation, external examining),
 
 API under `/api/payroll/*` (permission `payroll.manage`: Registrar, Finance Officer, Admin). Config:
 `Hr:Provider`, `Hr:Webhook:Url`. A React **Exam-Work Pay** page manages rates and claims.
+
+## Student services
+
+The non-academic side of student life carried over from the legacy system, as one Student Services area:
+
+- **Housing** — `POST /api/student-services/housing` assigns a hall + room (optionally per term);
+  `…/{id}/check-in` and `…/{id}/check-out` move the assignment through
+  `Assigned → CheckedIn → CheckedOut` with timestamps.
+- **Sports** — `POST /api/student-services/sports` records a student's participation (sport, team,
+  role, season).
+- **Chapel attendance** — `POST /api/student-services/chapel` records presence per event/date
+  (idempotent upsert on student+event+date); `GET /api/student-services/chapel/{id}/summary`
+  returns attended/total and the **attendance rate**.
+- **Health visits** — `POST /api/health/visits` records a visit. Health records are **confidential by
+  default**, gated by their **own** `health.manage` permission (separate from `studentservices.*`),
+  and every read/write is captured by the audit layer.
+
+Permissions: `studentservices.read` / `studentservices.manage` (Registrar, Admin) and
+`health.manage` (Admin). A React **Student Services** page covers housing, sports, chapel and health.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,

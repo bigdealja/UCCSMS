@@ -27,6 +27,7 @@ using SMS.Infrastructure.QuestionPapers;
 using SMS.Infrastructure.Scripts;
 using SMS.Infrastructure.AssessmentOps;
 using SMS.Infrastructure.Advisement;
+using SMS.Infrastructure.StudentServices;
 using SMS.Application.Hr;
 using SMS.Infrastructure.Hr;
 using SMS.Application.Ai;
@@ -113,6 +114,7 @@ public static class DependencyInjection
         services.AddScoped<ScriptCustodyService>();
         services.AddScoped<AssessmentOpsService>();
         services.AddScoped<AdvisementService>();
+        services.AddScoped<StudentServicesService>();
 
         // HR / payroll integration is provider-agnostic (None | Webhook).
         services.Configure<HrOptions>(config.GetSection("Hr"));

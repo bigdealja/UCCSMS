@@ -62,6 +62,10 @@ public class SmsDbContext : DbContext
     public DbSet<SittingRecord> SittingRecords => Set<SittingRecord>();
     public DbSet<PayRate> PayRates => Set<PayRate>();
     public DbSet<WorkClaim> WorkClaims => Set<WorkClaim>();
+    public DbSet<HousingAssignment> HousingAssignments => Set<HousingAssignment>();
+    public DbSet<HealthVisit> HealthVisits => Set<HealthVisit>();
+    public DbSet<SportsParticipation> SportsParticipations => Set<SportsParticipation>();
+    public DbSet<ChapelAttendance> ChapelAttendances => Set<ChapelAttendance>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -154,8 +158,16 @@ public class SmsDbContext : DbContext
         b.Entity<SittingRecord>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<PayRate>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<WorkClaim>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<HousingAssignment>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<HealthVisit>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<SportsParticipation>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<ChapelAttendance>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<PayRate>().HasIndex(x => new { x.WorkType, x.EffectiveFrom });
         b.Entity<WorkClaim>().HasIndex(x => x.Status);
+        b.Entity<HousingAssignment>().HasIndex(x => x.StudentId);
+        b.Entity<HealthVisit>().HasIndex(x => x.StudentId);
+        b.Entity<SportsParticipation>().HasIndex(x => x.StudentId);
+        b.Entity<ChapelAttendance>().HasIndex(x => new { x.StudentId, x.EventDate });
         b.Entity<PayRate>().Property(x => x.RatePerUnit).HasPrecision(18, 2);
         b.Entity<WorkClaim>().Property(x => x.Units).HasPrecision(18, 2);
         b.Entity<WorkClaim>().Property(x => x.RatePerUnit).HasPrecision(18, 2);
