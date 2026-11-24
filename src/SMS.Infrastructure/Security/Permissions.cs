@@ -21,6 +21,7 @@ public static class Permissions
         ("examiners.manage", "Manage external examiners"),
         ("papers.manage", "Manage question papers"),
         ("scripts.manage", "Manage script custody"),
+        ("payroll.manage", "Manage exam-work pay claims"),
     };
 
     public static readonly Dictionary<string, string[]> RoleMap = new()
@@ -28,12 +29,12 @@ public static class Permissions
         ["Admin"] = All.Select(p => p.Key).ToArray(),
         ["Registrar"] = new[] { "students.read","students.write","admissions.read","admissions.decide","registration.write",
             "grades.read","grades.change.approve","documents.read","documents.write","cases.read","cases.create","cases.approve",
-            "reports.read","pdf.generate","exams.manage","audit.read","examiners.manage","papers.manage","scripts.manage" },
+            "reports.read","pdf.generate","exams.manage","audit.read","examiners.manage","papers.manage","scripts.manage","payroll.manage" },
         ["AdmissionsOfficer"] = new[] { "admissions.read","admissions.decide","students.read","documents.read","documents.write","cases.read","cases.create","pdf.generate" },
         ["ExaminationOfficer"] = new[] { "exams.manage","exams.schedule","grades.read","grades.change.propose","cases.read","cases.create","reports.read","pdf.generate","examiners.manage","papers.manage","scripts.manage" },
         ["Lecturer"] = new[] { "grades.read","grades.import","grades.change.propose","cases.read","cases.create","assistant.use" },
         ["Dean"] = new[] { "grades.change.approve","cases.approve","reports.read","students.read","examiners.manage" },
-        ["FinanceOfficer"] = new[] { "finance.read","finance.post","students.read","reports.read" },
+        ["FinanceOfficer"] = new[] { "finance.read","finance.post","students.read","reports.read","payroll.manage" },
         ["Student"] = new[] { "assistant.use" },
         ["Auditor"] = new[] { "students.read","admissions.read","grades.read","finance.read","documents.read","cases.read","reports.read","audit.read" },
     };

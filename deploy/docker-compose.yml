@@ -58,6 +58,8 @@ services:
       Ai__Enabled: "${AI_ENABLED:-false}"
       Ai__BaseUrl: "${AI_BASEURL:-}"
       Ai__Model: "${AI_MODEL:-}"
+      Hr__Provider: "${HR_PROVIDER:-None}"
+      Hr__Webhook__Url: "${HR_WEBHOOK_URL:-}"
     depends_on: [ db, auth ]
 
   web:

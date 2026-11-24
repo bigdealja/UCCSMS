@@ -60,6 +60,8 @@ public class SmsDbContext : DbContext
     public DbSet<ScanBatch> ScanBatches => Set<ScanBatch>();
     public DbSet<MarkedScriptUpload> MarkedScriptUploads => Set<MarkedScriptUpload>();
     public DbSet<SittingRecord> SittingRecords => Set<SittingRecord>();
+    public DbSet<PayRate> PayRates => Set<PayRate>();
+    public DbSet<WorkClaim> WorkClaims => Set<WorkClaim>();
 
     protected override void OnModelCreating(ModelBuilder b)
     {
@@ -150,6 +152,14 @@ public class SmsDbContext : DbContext
         b.Entity<ScanBatch>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<MarkedScriptUpload>().HasQueryFilter(x => !x.IsDeleted);
         b.Entity<SittingRecord>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<PayRate>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<WorkClaim>().HasQueryFilter(x => !x.IsDeleted);
+        b.Entity<PayRate>().HasIndex(x => new { x.WorkType, x.EffectiveFrom });
+        b.Entity<WorkClaim>().HasIndex(x => x.Status);
+        b.Entity<PayRate>().Property(x => x.RatePerUnit).HasPrecision(18, 2);
+        b.Entity<WorkClaim>().Property(x => x.Units).HasPrecision(18, 2);
+        b.Entity<WorkClaim>().Property(x => x.RatePerUnit).HasPrecision(18, 2);
+        b.Entity<WorkClaim>().Property(x => x.Amount).HasPrecision(18, 2);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken ct = default)

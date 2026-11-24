@@ -27,6 +27,8 @@ using SMS.Infrastructure.QuestionPapers;
 using SMS.Infrastructure.Scripts;
 using SMS.Infrastructure.AssessmentOps;
 using SMS.Infrastructure.Advisement;
+using SMS.Application.Hr;
+using SMS.Infrastructure.Hr;
 using SMS.Application.Ai;
 using SMS.Infrastructure.Ai;
 using SMS.Infrastructure.Persistence;
@@ -111,6 +113,15 @@ public static class DependencyInjection
         services.AddScoped<ScriptCustodyService>();
         services.AddScoped<AssessmentOpsService>();
         services.AddScoped<AdvisementService>();
+
+        // HR / payroll integration is provider-agnostic (None | Webhook).
+        services.Configure<HrOptions>(config.GetSection("Hr"));
+        var hrProvider = config.GetSection("Hr")["Provider"] ?? "None";
+        if (string.Equals(hrProvider, "Webhook", StringComparison.OrdinalIgnoreCase))
+            services.AddHttpClient<IHrProvider, WebhookHrProvider>();
+        else
+            services.AddScoped<IHrProvider, NullHrProvider>();
+        services.AddScoped<PayrollService>();
         return services;
     }
 }

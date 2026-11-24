@@ -77,3 +77,6 @@ public record PaperDto(int Id, string Title, int CourseId, int TermId, string St
 public record ScriptBundleDto(int Id, string Code, int ExamId, int ScriptCount, string Status, string? Custodian, string? RetentionUntil, string? DisposalWitness);
 
 public record ComponentDto(int Id, string Name, string Category, double Weight, double MaxMark);
+
+public record PayRateDto(int Id, string WorkType, decimal RatePerUnit, string? Unit, string EffectiveFrom);
+public record WorkClaimDto(int Id, string ClaimantName, string WorkType, decimal Units, decimal RatePerUnit, decimal Amount, string Status, string? SubmittedBy, string? ApprovedBy, string? ExternalRef);

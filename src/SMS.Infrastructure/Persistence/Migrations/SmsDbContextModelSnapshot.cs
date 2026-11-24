@@ -1869,6 +1869,52 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.ToTable("Notifications");
                 });
 
+            modelBuilder.Entity("SMS.Domain.Entities.PayRate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateOnly>("EffectiveFrom")
+                        .HasColumnType("date");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("RatePerUnit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Unit")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("WorkType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkType", "EffectiveFrom");
+
+                    b.ToTable("PayRates");
+                });
+
             modelBuilder.Entity("SMS.Domain.Entities.Permission", b =>
                 {
                     b.Property<int>("Id")
@@ -2743,6 +2789,76 @@ namespace SMS.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserRoleAssignments");
+                });
+
+            modelBuilder.Entity("SMS.Domain.Entities.WorkClaim", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ApprovedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimantName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CompletionEvidence")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("CreatedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ExternalRef")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("ModifiedUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Provider")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("RatePerUnit")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("StaffFacultyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SubmittedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Units")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("WorkType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Status");
+
+                    b.ToTable("WorkClaims");
                 });
 
             modelBuilder.Entity("SMS.Domain.Entities.AdmissionApplication", b =>

@@ -20,6 +20,7 @@ import AssessmentOpsPage from './pages/AssessmentOpsPage'
 import CasesPage from './pages/CasesPage'
 import DocumentsPage from './pages/DocumentsPage'
 import FinancePage from './pages/FinancePage'
+import PayrollPage from './pages/PayrollPage'
 import GradingPage from './pages/GradingPage'
 import GradebookPage from './pages/GradebookPage'
 import GradeGovernancePage from './pages/GradeGovernancePage'
@@ -52,6 +53,7 @@ function Shell() {
           <NavLink to="/cases">Cases</NavLink>
           <NavLink to="/documents">Documents</NavLink>
           <NavLink to="/finance">Finance</NavLink>
+          <NavLink to="/payroll">Exam-Work Pay</NavLink>
           <NavLink to="/moodle">Moodle Sync</NavLink>
         </nav>
       </aside>
@@ -80,6 +82,7 @@ function Shell() {
           <Route path="/cases" element={<CasesPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="/finance" element={<FinancePage />} />
+          <Route path="/payroll" element={<PayrollPage />} />
         </Routes>
       </main>
     </div>

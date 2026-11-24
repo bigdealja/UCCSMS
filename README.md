@@ -118,7 +118,8 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **Scripts & custody** ✅ | Script bundles with full chain of custody, scanning, issue-to-marker, marked uploads, retention + witnessed disposal |
 | **Assessment operations register** ✅ | One record per sitting; milestones drive auto stage + status (ready/at-risk/overdue/blocked/complete) + needs-attention view |
 | **Advisement & graduation** ✅ | Programme progress (credits earned/required, GPA, outstanding/failed courses) + graduation-eligibility verdict |
-| **10b — Remaining modules** | HR provider, legacy student services |
+| **Exam-work payments (HR)** ✅ | Dated rate tables, work claims computed from rates, second-person approval, pluggable HR/payroll export |
+| **Remaining** | Legacy student services (housing/health/sports/chapel), data migration, production hardening |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
@@ -485,6 +486,21 @@ Student academic progression against the programme curriculum:
 
 Permission `students.read`. A React **Advisement** page shows the credit/GPA/outstanding summary,
 the graduation verdict, and the completed/outstanding course lists.
+
+## Exam-work payments & HR integration
+
+Payment authorisation for exam work (marking, invigilation, external examining), from the EMS brief:
+
+- **Dated rate tables** — a `PayRate` per work type with an effective date; the **effective rate** is
+  the latest on or before the claim date.
+- **Work claims** — computed from the effective rate (amount = units × rate), with completion
+  evidence; a claim is submitted, **approved by a second person** (not the submitter), then exported.
+- **Provider-agnostic HR/payroll export** — `IHrProvider`: `None` (internal record only) or a generic
+  **`Webhook`** that posts approved claims to any HR/payroll/Finance system. Named vendor providers
+  can be added later without touching the payroll logic.
+
+API under `/api/payroll/*` (permission `payroll.manage`: Registrar, Finance Officer, Admin). Config:
+`Hr:Provider`, `Hr:Webhook:Url`. A React **Exam-Work Pay** page manages rates and claims.
 
 ## Data migration
 Legacy source databases on the current SQL Server: `AEORIONSMS_UCC`, `ASM_UCC`,
