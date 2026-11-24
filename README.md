@@ -119,7 +119,8 @@ Then put your TLS certificate in `deploy/certs/` and enable the `443` server blo
 | **Assessment operations register** ✅ | One record per sitting; milestones drive auto stage + status (ready/at-risk/overdue/blocked/complete) + needs-attention view |
 | **Advisement & graduation** ✅ | Programme progress (credits earned/required, GPA, outstanding/failed courses) + graduation-eligibility verdict |
 | **Exam-work payments (HR)** ✅ | Dated rate tables, work claims computed from rates, second-person approval, pluggable HR/payroll export |
-| **Remaining** | Legacy student services (housing/health/sports/chapel), data migration, production hardening |
+| **Data migration toolkit** ✅ | Staged, idempotent Aeorion→new migration (SQL or CSV source), reconciliation report, dry-run — see MIGRATION.md |
+| **Remaining** | Legacy student services (housing/health/sports/chapel), production hardening |
 | **11 — Data migration + cutover** | Migrate from the current Aeorion databases |
 
 ## Moodle integration (Phase 2)
