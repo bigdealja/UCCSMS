@@ -7,7 +7,11 @@ services:
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "${DB_SA_PASSWORD}"
-    volumes: [ "mssql-data:/var/opt/mssql" ]
+    # The backups volume is shared with db-backup (BACKUP DATABASE writes on the server side).
+    volumes:
+      - "mssql-data:/var/opt/mssql"
+      - "mssql-backups:/var/opt/mssql/backups"
+    restart: unless-stopped
     # Not published to the host in production — only the API talks to it on the internal network.
 
   auth:
@@ -66,6 +70,33 @@ services:
     build: { context: .., dockerfile: deploy/Dockerfile.web }
     depends_on: [ api ]
 
+  # --- Scheduled backups (daily by default; retention BACKUP_RETENTION_DAYS) ---
+  db-backup:
+    build: { context: .., dockerfile: deploy/Dockerfile.backup }
+    command: [ "/scripts/db-backup.sh" ]
+    environment:
+      DB_HOST: db
+      DB_NAME: SMS
+      DB_SA_PASSWORD: "${DB_SA_PASSWORD}"
+      BACKUP_RETENTION_DAYS: "${BACKUP_RETENTION_DAYS:-14}"
+    volumes:
+      - "mssql-backups:/var/opt/mssql/backups"   # same volume the db server writes .bak files to
+    depends_on: [ db ]
+    restart: unless-stopped
+
+  storage-backup:
+    build: { context: .., dockerfile: deploy/Dockerfile.backup }
+    command: [ "/scripts/storage-backup.sh" ]
+    environment:
+      MINIO_ENDPOINT: "http://storage:9000"
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+      BACKUP_RETENTION_DAYS: "${BACKUP_RETENTION_DAYS:-14}"
+    volumes:
+      - "minio-backups:/backups"
+    depends_on: [ storage ]
+    restart: unless-stopped
+
   proxy:
     image: nginx:1.27-alpine
     ports: [ "80:80", "443:443" ]   # the only ports exposed to the network
@@ -78,4 +109,6 @@ services:
 
 volumes:
   mssql-data:
+  mssql-backups:
   minio-data:
+  minio-backups:
